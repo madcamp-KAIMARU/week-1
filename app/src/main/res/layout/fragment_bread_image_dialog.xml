@@ -13,8 +13,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="16dp"
-        android:clickable="true">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/imageView"

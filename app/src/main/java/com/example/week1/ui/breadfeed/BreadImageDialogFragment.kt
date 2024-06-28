@@ -33,14 +33,9 @@ class BreadImageDialogFragment : DialogFragment() {
         }
         binding.textView.text = description
 
-        // Dismiss the dialog when clicking outside of the content area
+        // Dismiss the dialog when clicking anywhere on the view
         binding.root.setOnClickListener {
             dismiss()
-        }
-
-        // Prevent clicks on the LinearLayout from dismissing the dialog
-        binding.contentLayout.setOnClickListener {
-            // Do nothing
         }
     }
 
