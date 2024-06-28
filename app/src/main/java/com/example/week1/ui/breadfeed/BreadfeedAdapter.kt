@@ -1,9 +1,9 @@
 package com.example.week1.ui.breadfeed
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week1.databinding.ItemBreadPostBinding
@@ -23,11 +23,9 @@ class BreadfeedAdapter(private val context: Context, private var breadPosts: Lis
         holder.binding.textView.text = breadPost.description
 
         holder.itemView.setOnClickListener {
-            val intent = Intent(context, BreadDetailActivity::class.java).apply {
-                putExtra("image_url", breadPost.imageUrl)
-                putExtra("description", breadPost.description)
-            }
-            context.startActivity(intent)
+            val fragmentManager = (context as FragmentActivity).supportFragmentManager
+            val breadImageDialogFragment = BreadImageDialogFragment.newInstance(breadPost.imageUrl, breadPost.description)
+            breadImageDialogFragment.show(fragmentManager, "bread_image_dialog")
         }
     }
 
