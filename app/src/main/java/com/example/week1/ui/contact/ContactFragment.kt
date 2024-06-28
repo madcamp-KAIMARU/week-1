@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -17,7 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.week1.databinding.FragmentContactBinding
 
-class ContactFragment : Fragment() {
+class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener {
 
     private var _binding: FragmentContactBinding? = null
     private val binding get() = _binding!!
@@ -25,8 +24,7 @@ class ContactFragment : Fragment() {
     private lateinit var contactViewModel: ContactViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentContactBinding.inflate(inflater, container, false)
@@ -36,14 +34,6 @@ class ContactFragment : Fragment() {
 
         val listView = binding.contactListView
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer { contacts ->
-//            contacts?.let {
-//                val adapter = ArrayAdapter(
-//                    requireContext(),
-//                    android.R.layout.simple_list_item_1,
-//                    it.map { contact -> "${contact.name} ${contact.number}" }
-//                )
-//                listView.adapter = adapter
-//            }
             contacts?.let {
                 val adapter = ContactAdapter(requireContext(), it)
                 listView.adapter = adapter
@@ -57,6 +47,12 @@ class ContactFragment : Fragment() {
             loadContacts()
         }
 
+        binding.fab.setOnClickListener {
+            val dialog = AddContactDialogFragment()
+            dialog.setOnContactAddedListener(this)
+            dialog.show(parentFragmentManager, "AddContactDialogFragment")
+        }
+
         return root
     }
 
@@ -66,7 +62,7 @@ class ContactFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d("test", "permission granted")
             loadContacts()
         } else {
@@ -97,6 +93,16 @@ class ContactFragment : Fragment() {
         }
 
         contactViewModel.setContacts(contactList)
+    }
+
+    override fun onContactAdded(contact: Contact) {
+        // 연락처가 추가된 후 리스트를 갱신합니다.
+        Log.d("ContactFragment", "Contact added: $contact")
+        val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
+        if (!currentContacts.contains(contact)) {
+            currentContacts.add(contact)
+        }
+        contactViewModel.setContacts(currentContacts)
     }
 
     override fun onDestroyView() {
