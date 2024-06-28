@@ -8,18 +8,18 @@
     <fragment
         android:id="@+id/navigation_contact"
         android:name="com.example.week1.ui.contact.ContactFragment"
-        android:label="@string/title_contact"
+        android:label="Contact"
         tools:layout="@layout/fragment_contact" />
 
     <fragment
-        android:id="@+id/navigation_gallery"
-        android:name="com.example.week1.ui.gallery.GalleryFragment"
-        android:label="@string/title_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/navigation_breadfeed"
+        android:name="com.example.week1.ui.breadfeed.BreadfeedFragment"
+        android:label="Breadfeed"
+        tools:layout="@layout/fragment_breadfeed" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.week1.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:label="Notifications"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
