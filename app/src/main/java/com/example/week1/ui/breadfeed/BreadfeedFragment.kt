@@ -18,9 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.example.week1.databinding.FragmentBreadfeedBinding
 import com.example.week1.databinding.DialogAddBreadPostBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /* BreadfeedFragment displays a grid of bread posts using RecyclerView.
  * It uses a ViewModel to manage the data.
@@ -63,7 +63,7 @@ class BreadfeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = BreadfeedAdapter(requireContext(), emptyList())
-        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3) // 3열로 설정
         binding.recyclerView.adapter = adapter
         Log.d("BreadfeedFragment", "onViewCreated: RecyclerView and Adapter set")
 
