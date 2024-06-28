@@ -33,7 +33,7 @@ class BreadImageDialogFragment : DialogFragment() {
         }
         binding.textView.text = description
 
-        // Dismiss the dialog when clicking anywhere on the view
+        // Dismiss the dialog when clicking outside of the content area
         binding.root.setOnClickListener {
             dismiss()
         }

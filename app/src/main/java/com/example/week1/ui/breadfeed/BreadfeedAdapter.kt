@@ -20,7 +20,6 @@ class BreadfeedAdapter(private val context: Context, private var breadPosts: Lis
         Glide.with(context)
             .load(breadPost.imageUrl)
             .into(holder.binding.imageView)
-        holder.binding.textView.text = breadPost.description
 
         holder.itemView.setOnClickListener {
             val fragmentManager = (context as FragmentActivity).supportFragmentManager

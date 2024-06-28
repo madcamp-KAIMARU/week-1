@@ -1,24 +1,28 @@
 package com.example.week1.ui.breadfeed
 
-import android.util.Log
-/* DummyData provides a list of sample bread posts for testing and development purposes.
- * Each BreadPost contains a sample image URL and description.
- */
 object DummyData {
-    fun getDummyPosts(): List<BreadPost> {
-        // Generate a list of dummy BreadPost objects
-        Log.d("DummyData", "getDummyPosts: Generating dummy posts")
+    fun getBreadPosts(): List<BreadPost> {
         return listOf(
-            BreadPost("https://via.placeholder.com/150", "Delicious bread from ABC Bakery."),
-            BreadPost("https://via.placeholder.com/150", "Tasty croissants at XYZ Cafe."),
-            BreadPost("https://via.placeholder.com/150", "Freshly baked bagels from Baker's Street."),
-            BreadPost("https://via.placeholder.com/150", "Sweet donuts from Donut Delight."),
-            BreadPost("https://via.placeholder.com/150", "Savory muffins from Morning Glory."),
-            BreadPost("https://via.placeholder.com/150", "Soft and fluffy bread from Bread Heaven."),
-            BreadPost("https://via.placeholder.com/150", "Crispy baguettes at Parisian Bakery."),
-            BreadPost("https://via.placeholder.com/150", "Chocolate croissants from Cocoa Corner."),
-            BreadPost("https://via.placeholder.com/150", "Warm and tasty scones from Tea Time."),
-            BreadPost("https://via.placeholder.com/150", "Artisan bread from Rustic Bakery.")
+            BreadPost("file:///android_asset/breads/bestseller.jpg", "Bestseller bread"),
+            BreadPost("file:///android_asset/breads/bingsu1.jpg", "Bingsu 1"),
+            BreadPost("file:///android_asset/breads/bingsu2.jpg", "Bingsu 2"),
+            BreadPost("file:///android_asset/breads/buchu.jpg", "Buchu bread"),
+            BreadPost("file:///android_asset/breads/callmard1.jpg", "Callmard 1"),
+            BreadPost("file:///android_asset/breads/callmard2.jpg", "Callmard 2"),
+            BreadPost("file:///android_asset/breads/fruits.jpg", "Fruits bread"),
+            BreadPost("file:///android_asset/breads/goroke.jpg", "Goroke bread"),
+            BreadPost("file:///android_asset/breads/hans1.jpg", "Hans 1"),
+            BreadPost("file:///android_asset/breads/ts.jpg", "Ts bread"),
+            BreadPost("file:///android_asset/breads/long.jpg", "Long bread"),
+            BreadPost("file:///android_asset/breads/mango1.jpg", "Mango 1"),
+            BreadPost("file:///android_asset/breads/mango2.jpg", "Mango 2"),
+            BreadPost("file:///android_asset/breads/mango3.jpg", "Mango 3"),
+            BreadPost("file:///android_asset/breads/manybread.jpg", "Many bread"),
+            BreadPost("file:///android_asset/breads/manycake.jpg", "Many cake"),
+            BreadPost("file:///android_asset/breads/meari.jpg", "Meari bread"),
+            BreadPost("file:///android_asset/breads/noodle.jpg", "Noodle bread"),
+            BreadPost("file:///android_asset/breads/salt.jpg", "Salt bread"),
+            BreadPost("file:///android_asset/breads/sunsu.jpg", "Sunsu bread")
         )
     }
 }
