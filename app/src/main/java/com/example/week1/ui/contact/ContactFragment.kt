@@ -7,11 +7,14 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,6 +32,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
 
     private lateinit var contactViewModel: ContactViewModel
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var allContacts: List<Contact>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +54,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             }
         })
 
+        // 권한 확인 및 요청
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_CONTACTS), 1)
         } else {
@@ -61,6 +66,18 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             dialog.setOnContactAddedListener(this)
             dialog.show(parentFragmentManager, "AddContactDialogFragment")
         }
+
+        // 검색 바의 텍스트 변경 리스너 설정
+        val searchBar = binding.searchBar
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterContacts(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
         return root
     }
@@ -111,7 +128,16 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             contactList.addAll(savedContacts)
         }
 
+        // Sort contacts by name
+        contactList.sortBy { it.name }
+
+        allContacts = contactList
         contactViewModel.setContacts(contactList)
+    }
+
+    private fun filterContacts(query: String) {
+        val filteredContacts = allContacts.filter { it.name.contains(query, ignoreCase = true) }
+        contactViewModel.setContacts(filteredContacts)
     }
 
     override fun onContactAdded(contact: Contact) {
@@ -122,6 +148,10 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
 
+        // Sort contacts by name
+        currentContacts.sortBy { it.name }
+
+        allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
     }
 
@@ -132,6 +162,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
 
+        allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
         Toast.makeText(requireContext(), "Contact deleted", Toast.LENGTH_SHORT).show()
     }
