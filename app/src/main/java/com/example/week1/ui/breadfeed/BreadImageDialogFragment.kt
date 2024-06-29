@@ -39,6 +39,7 @@ class BreadImageDialogFragment : DialogFragment() {
         val imageUrl = arguments?.getString("image_url")
         val description = arguments?.getString("description")
         val date = arguments?.getString("date")
+        val where2Meet = arguments?.getString("where_to_meet")
         currentParticipants = arguments?.getInt("current_participants") ?: 0
         maxParticipants = arguments?.getInt("max_participants") ?: 0
 
@@ -73,6 +74,7 @@ class BreadImageDialogFragment : DialogFragment() {
         binding.textViewDescription.text = description
         binding.textViewDate.text = date
         binding.textViewParticipants.text = "$currentParticipants / $maxParticipants"
+        binding.textViewWhere2Meet.text = where2Meet
 
         binding.buttonJoin.setOnClickListener {
             if (currentParticipants < maxParticipants) {
@@ -104,7 +106,7 @@ class BreadImageDialogFragment : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(imageUrl: String, description: String, date: String, currentParticipants: Int, maxParticipants: Int): BreadImageDialogFragment {
+        fun newInstance(imageUrl: String, description: String, date: String, currentParticipants: Int, maxParticipants: Int, where2Meet: String): BreadImageDialogFragment {
             val fragment = BreadImageDialogFragment()
             val args = Bundle()
             args.putString("image_url", imageUrl)
@@ -112,6 +114,7 @@ class BreadImageDialogFragment : DialogFragment() {
             args.putString("date", date)
             args.putInt("current_participants", currentParticipants)
             args.putInt("max_participants", maxParticipants)
+            args.putString("where_to_meet", where2Meet)
             fragment.arguments = args
             return fragment
         }

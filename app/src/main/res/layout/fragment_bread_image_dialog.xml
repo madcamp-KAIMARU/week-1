@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.breadfeed.BreadImageDialogFragment">
+    tools:context=".ui.breadfeed.BreadImageDialogFragment"
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@android:color/white">
 
         <ImageView
             android:id="@+id/imageView"
@@ -20,7 +22,8 @@
             android:layout_weight="1"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/bread_image" />
+            android:contentDescription="@string/bread_image"
+            android:layout_marginBottom="16dp"/>
 
         <TextView
             android:id="@+id/textViewDescription"
@@ -28,35 +31,101 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/white"/>
 
-        <TextView
-            android:id="@+id/textViewDate"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:textAlignment="center" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/white">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📅 언제?"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp"/>
+            <TextView
+                android:id="@+id/textViewDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/textViewParticipants"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            android:textAlignment="center" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/white">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 어디서?"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp"/>
+            <TextView
+                android:id="@+id/textViewWhere2Meet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"/>
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/buttonJoin"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/join" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/white">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👥 몇명?"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp"/>
+            <TextView
+                android:id="@+id/textViewParticipants"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"/>
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/buttonClose"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/close" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/buttonJoin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/join"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/buttonClose"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/close"
+                style="@style/Widget.AppCompat.Button.Colored"/>
+        </LinearLayout>
 
     </LinearLayout>
 
