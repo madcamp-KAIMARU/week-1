@@ -1,6 +1,6 @@
 package com.example.week1.ui.breadfeed
 
-object DummyData {
+object BreadfeedDummyData {
     fun getBreadPosts(): List<BreadPost> {
         return listOf(
             BreadPost("file:///android_asset/breads/bestseller.jpg", "성심당 베스트셀러 다 털러 가자구! 카이택시에서 만나서 본점으로 고고🚖🥐", "2024-07-06 12:00", 1, 4, "카이스트 택시승강장"),

@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class BreadfeedViewModel : ViewModel() {
 
     private val _breadPosts = MutableLiveData<List<BreadPost>>().apply {
-        value = DummyData.getBreadPosts()
+        value = BreadfeedDummyData.getBreadPosts()
     }
     val breadPosts: LiveData<List<BreadPost>> = _breadPosts
 
