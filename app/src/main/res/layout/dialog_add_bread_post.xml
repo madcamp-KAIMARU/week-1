@@ -11,4 +11,19 @@
         android:layout_height="wrap_content"
         android:hint="Enter description" />
 
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:clickable="true"
+        android:hint="Select date and time" />
+
+    <EditText
+        android:id="@+id/editTextMaxParticipants"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Enter max participants" />
+
 </LinearLayout>
