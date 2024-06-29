@@ -9,11 +9,14 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -143,14 +146,33 @@ class BreadfeedFragment : Fragment() {
                 val description = dialogBinding.editTextDescription.text.toString()
                 val date = dialogBinding.editTextDate.text.toString()
                 val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
-                val newBreadPost = BreadPost(imageUri.toString(), description, date, 0, maxParticipants)
+                val newBreadPost = BreadPost(imageUri.toString(), description, date, 1, maxParticipants)
                 viewModel.addBreadPost(newBreadPost)
             }
             .setNegativeButton("Cancel", null)
             .create()
 
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val description = dialogBinding.editTextDescription.text.toString().trim()
+                val date = dialogBinding.editTextDate.text.toString().trim()
+                val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().trim()
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = description.isNotEmpty() && date.isNotEmpty() && maxParticipants.isNotEmpty()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        dialogBinding.editTextDescription.addTextChangedListener(textWatcher)
+        dialogBinding.editTextDate.addTextChangedListener(textWatcher)
+        dialogBinding.editTextMaxParticipants.addTextChangedListener(textWatcher)
+
         dialogBinding.editTextDate.setOnClickListener {
             showDateTimePicker(dialogBinding.editTextDate)
+        }
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
         }
 
         dialog.show()
