@@ -18,8 +18,8 @@
         tools:layout="@layout/fragment_breadfeed" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.week1.ui.notifications.NotificationsFragment"
-        android:label="Notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_ratings"
+        android:name="com.example.week1.ui.ratings.RatingsFragment"
+        android:label="Ratings"
+        tools:layout="@layout/fragment_ratings" />
 </navigation>

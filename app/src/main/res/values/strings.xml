@@ -2,7 +2,7 @@
     <string name="app_name">week-1</string>
     <string name="title_contact">Contact</string>
     <string name="title_breadfeed">Bread Feed</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_ratings">Ratings</string>
     <string name="bread_image">Bread Image</string>
     <string name="permission_required">Permission Required</string>
     <string name="permission_message">To upload images, this app requires access to your device\'s storage. Please grant the permission.</string>
