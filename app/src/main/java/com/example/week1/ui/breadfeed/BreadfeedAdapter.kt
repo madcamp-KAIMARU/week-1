@@ -23,7 +23,8 @@ class BreadfeedAdapter(
             binding.root.setOnClickListener {
                 val dialog = BreadImageDialogFragment.newInstance(
                     breadPost.imageUrl, breadPost.description,
-                    breadPost.date, breadPost.currentParticipants, breadPost.maxParticipants
+                    breadPost.date, breadPost.currentParticipants, breadPost.maxParticipants,
+                    breadPost.where2Meet
                 )
                 dialog.show(fragmentManager, "BreadImageDialogFragment")
             }

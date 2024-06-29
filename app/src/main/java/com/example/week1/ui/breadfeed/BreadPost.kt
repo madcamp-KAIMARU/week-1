@@ -5,5 +5,6 @@ data class BreadPost(
     val description: String,
     val date: String,
     var currentParticipants: Int,
-    val maxParticipants: Int
+    val maxParticipants: Int,
+    val where2Meet: String
 )

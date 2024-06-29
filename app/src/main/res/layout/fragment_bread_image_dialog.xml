@@ -46,6 +46,14 @@
             android:textSize="14sp"
             android:textAlignment="center" />
 
+        <TextView
+            android:id="@+id/textViewWhere2Meet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textAlignment="center" />
+
         <Button
             android:id="@+id/buttonJoin"
             android:layout_width="wrap_content"

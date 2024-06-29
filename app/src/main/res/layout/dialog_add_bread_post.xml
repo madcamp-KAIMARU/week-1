@@ -27,4 +27,11 @@
         android:hint="Enter max participants"
         android:inputType="number" />
 
+    <EditText
+        android:id="@+id/editTextWhere2Meet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter where_to_meet"
+        android:inputType="text" />
+
 </LinearLayout>

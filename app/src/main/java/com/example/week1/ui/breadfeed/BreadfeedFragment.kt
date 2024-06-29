@@ -146,7 +146,8 @@ class BreadfeedFragment : Fragment() {
                 val description = dialogBinding.editTextDescription.text.toString()
                 val date = dialogBinding.editTextDate.text.toString()
                 val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
-                val newBreadPost = BreadPost(imageUri.toString(), description, date, 1, maxParticipants)
+                val where2Meet = dialogBinding.editTextWhere2Meet.text.toString()
+                val newBreadPost = BreadPost(imageUri.toString(), description, date, 1, maxParticipants, where2Meet)
                 viewModel.addBreadPost(newBreadPost)
             }
             .setNegativeButton("Cancel", null)
