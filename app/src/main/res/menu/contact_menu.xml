@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fab_sync"
+        android:icon="@drawable/ic_sync"
+        android:title="@string/sync_contacts" />
+    <item
+        android:id="@+id/fab_add_contact"
+        android:icon="@drawable/ic_add"
+        android:title="@string/add_contact" />
+</menu>

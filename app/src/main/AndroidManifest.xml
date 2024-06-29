@@ -39,7 +39,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.contact.AddContactActivity" />
     </application>
 
 </manifest>
