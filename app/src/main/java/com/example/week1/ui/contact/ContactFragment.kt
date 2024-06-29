@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.week1.R
 import com.example.week1.databinding.FragmentContactBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -69,23 +70,23 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
 
         fabMain.setOnClickListener {
             if (isFabMenuOpen) {
-                closeFabMenu(fabSync, fabAdd)
+                closeFabMenu(fabSync, fabAdd, fabMain)
             } else {
-                openFabMenu(fabSync, fabAdd)
+                openFabMenu(fabSync, fabAdd, fabMain)
             }
         }
 
         fabSync.setOnClickListener {
             synchronizeContacts()
             Toast.makeText(requireContext(), "Contacts synchronized", Toast.LENGTH_SHORT).show()
-            closeFabMenu(fabSync, fabAdd)
+            closeFabMenu(fabSync, fabAdd, fabMain)
         }
 
         fabAdd.setOnClickListener {
             val dialog = AddContactDialogFragment()
             dialog.setOnContactAddedListener(this)
             dialog.show(parentFragmentManager, "AddContactDialogFragment")
-            closeFabMenu(fabSync, fabAdd)
+            closeFabMenu(fabSync, fabAdd, fabMain)
         }
 
         // 검색 바의 텍스트 변경 리스너 설정
@@ -103,14 +104,18 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         return root
     }
 
-    private fun openFabMenu(vararg fabs: FloatingActionButton) {
+    private fun openFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
         isFabMenuOpen = true
-        fabs.forEach { it.visibility = View.VISIBLE }
+        fabSync.visibility = View.VISIBLE
+        fabAdd.visibility = View.VISIBLE
+        fabMain.setImageResource(R.drawable.ic_close) // 아이콘을 빼기 기호로 변경
     }
 
-    private fun closeFabMenu(vararg fabs: FloatingActionButton) {
+    private fun closeFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
         isFabMenuOpen = false
-        fabs.forEach { it.visibility = View.GONE }
+        fabSync.visibility = View.GONE
+        fabAdd.visibility = View.GONE
+        fabMain.setImageResource(R.drawable.ic_open) // 아이콘을 더하기 기호로 변경
     }
 
     override fun onRequestPermissionsResult(
