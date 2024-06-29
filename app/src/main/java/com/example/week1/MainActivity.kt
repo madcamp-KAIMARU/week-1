@@ -9,7 +9,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.week1.databinding.ActivityMainBinding
 
-/* MainActivity sets up the BottomNavigationView and NavController for navigation. */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
