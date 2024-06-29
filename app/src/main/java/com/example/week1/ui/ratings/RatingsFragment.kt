@@ -4,39 +4,42 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.example.week1.databinding.FragmentRatingsBinding
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.week1.R
+import com.example.week1.data.Bread
 
 class RatingsFragment : Fragment() {
 
-    private var _binding: FragmentRatingsBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var breadAdapter: BreadAdapter
+    private lateinit var breadList: List<Bread>
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val ratingsViewModel =
-            ViewModelProvider(this).get(RatingsViewModel::class.java)
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_ratings, container, false)
+        recyclerView = view.findViewById(R.id.recycler_view_ratings)
 
-        _binding = FragmentRatingsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        // Initialize bread list
+        breadList = loadBreads()
 
-        val textView: TextView = binding.textRatings
-        ratingsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+        // Set up RecyclerView
+        breadAdapter = BreadAdapter(requireContext(), breadList)
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
+        recyclerView.adapter = breadAdapter
+
+        return view
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun loadBreads(): List<Bread> {
+        // Load breads from assets/sungsimdang
+        val breadNames = arrayOf("bread1", "bread2", "bread3") // Add all bread names here
+        return breadNames.map { name ->
+            val imagePath = "file:///android_asset/sungsimdang/$name.png"
+            Bread(name, imagePath, 0f)
+        }
     }
 }
