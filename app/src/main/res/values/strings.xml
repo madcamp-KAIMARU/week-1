@@ -14,5 +14,10 @@
     <string name="add_bread_post">Add Bread Post</string>
     <string name="enter_description">Enter description</string>
     <string name="add">Add</string>
-    <string name="upload_image">Update image</string>
+    <string name="upload_image">Upload image</string>
+    <string name="date_hint">Date (YYYY-MM-DD HH:MM)</string>
+    <string name="max_participants_hint">Max Participants</string>
+    <string name="event_full">The event is full.</string>
+    <string name="join">Join</string>
+    <string name="close">Close</string>
 </resources>

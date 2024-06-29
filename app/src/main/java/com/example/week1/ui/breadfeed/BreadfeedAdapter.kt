@@ -3,39 +3,46 @@ package com.example.week1.ui.breadfeed
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week1.databinding.ItemBreadPostBinding
 
-class BreadfeedAdapter(private val context: Context, private var breadPosts: List<BreadPost>) : RecyclerView.Adapter<BreadfeedAdapter.BreadfeedViewHolder>() {
+class BreadfeedAdapter(
+    private val context: Context,
+    private var breadPosts: List<BreadPost>,
+    private val fragmentManager: FragmentManager
+) : RecyclerView.Adapter<BreadfeedAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BreadfeedViewHolder {
-        val binding = ItemBreadPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return BreadfeedViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: BreadfeedViewHolder, position: Int) {
-        val breadPost = breadPosts[position]
-        Glide.with(context)
-            .load(breadPost.imageUrl)
-            .into(holder.binding.imageView)
-
-        holder.itemView.setOnClickListener {
-            val fragmentManager = (context as FragmentActivity).supportFragmentManager
-            val breadImageDialogFragment = BreadImageDialogFragment.newInstance(breadPost.imageUrl, breadPost.description)
-            breadImageDialogFragment.show(fragmentManager, "bread_image_dialog")
+    inner class ViewHolder(private val binding: ItemBreadPostBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(breadPost: BreadPost) {
+            Glide.with(context)
+                .load(breadPost.imageUrl)
+                .centerCrop()
+                .into(binding.imageView)
+            binding.root.setOnClickListener {
+                val dialog = BreadImageDialogFragment.newInstance(
+                    breadPost.imageUrl, breadPost.description,
+                    breadPost.date, breadPost.currentParticipants, breadPost.maxParticipants
+                )
+                dialog.show(fragmentManager, "BreadImageDialogFragment")
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return breadPosts.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemBreadPostBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
-    fun updateData(newBreadPosts: List<BreadPost>) {
-        breadPosts = newBreadPosts
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(breadPosts[position])
+    }
+
+    override fun getItemCount(): Int = breadPosts.size
+
+    fun updateData(newPosts: List<BreadPost>) {
+        breadPosts = newPosts
         notifyDataSetChanged()
     }
-
-    inner class BreadfeedViewHolder(val binding: ItemBreadPostBinding) : RecyclerView.ViewHolder(binding.root)
 }
