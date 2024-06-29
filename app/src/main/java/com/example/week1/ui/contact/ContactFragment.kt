@@ -7,20 +7,23 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.week1.R
 import com.example.week1.databinding.FragmentContactBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener {
 
@@ -29,6 +32,9 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
 
     private lateinit var contactViewModel: ContactViewModel
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var allContacts: List<Contact>
+
+    private var isFabMenuOpen = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,19 +56,66 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             }
         })
 
+        // 권한 확인 및 요청
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_CONTACTS), 1)
         } else {
             loadContacts()
         }
 
-        binding.fab.setOnClickListener {
+        // FAB 메뉴 설정
+        val fabMain: FloatingActionButton = binding.fabMain
+        val fabSync: FloatingActionButton = binding.fabSync
+        val fabAdd: FloatingActionButton = binding.fabAdd
+
+        fabMain.setOnClickListener {
+            if (isFabMenuOpen) {
+                closeFabMenu(fabSync, fabAdd, fabMain)
+            } else {
+                openFabMenu(fabSync, fabAdd, fabMain)
+            }
+        }
+
+        fabSync.setOnClickListener {
+            synchronizeContacts()
+            Toast.makeText(requireContext(), "Contacts synchronized", Toast.LENGTH_SHORT).show()
+            closeFabMenu(fabSync, fabAdd, fabMain)
+        }
+
+        fabAdd.setOnClickListener {
             val dialog = AddContactDialogFragment()
             dialog.setOnContactAddedListener(this)
             dialog.show(parentFragmentManager, "AddContactDialogFragment")
+            closeFabMenu(fabSync, fabAdd, fabMain)
         }
 
+        // 검색 바의 텍스트 변경 리스너 설정
+        val searchBar = binding.searchBar
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterContacts(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         return root
+    }
+
+    private fun openFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
+        isFabMenuOpen = true
+        fabSync.visibility = View.VISIBLE
+        fabAdd.visibility = View.VISIBLE
+        fabMain.setImageResource(R.drawable.ic_close) // 아이콘을 빼기 기호로 변경
+    }
+
+    private fun closeFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
+        isFabMenuOpen = false
+        fabSync.visibility = View.GONE
+        fabAdd.visibility = View.GONE
+        fabMain.setImageResource(R.drawable.ic_open) // 아이콘을 더하기 기호로 변경
     }
 
     override fun onRequestPermissionsResult(
@@ -82,6 +135,24 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     private fun loadContacts() {
         val contactList = mutableListOf<Contact>()
 
+        // Load contacts from SharedPreferences
+        val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
+        if (!savedContactsJson.isNullOrEmpty()) {
+            val type = object : TypeToken<List<Contact>>() {}.type
+            val savedContacts: List<Contact> = Gson().fromJson(savedContactsJson, type)
+            contactList.addAll(savedContacts)
+        }
+
+        // Sort contacts by name
+        contactList.sortBy { it.name }
+
+        allContacts = contactList
+        contactViewModel.setContacts(contactList)
+    }
+
+    private fun synchronizeContacts() {
+        val contactList = mutableListOf<Contact>()
+
         // Load contacts from phone
         val resolver = requireContext().contentResolver
         val cursor: Cursor? = resolver.query(
@@ -99,7 +170,10 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             while (cursor.moveToNext()) {
                 val name = cursor.getString(nameIndex)
                 val number = cursor.getString(numberIndex)
-                contactList.add(Contact(name, number))
+                val contact = Contact(name, number)
+                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
+                    contactList.add(contact)
+                }
             }
         }
 
@@ -108,10 +182,23 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         if (!savedContactsJson.isNullOrEmpty()) {
             val type = object : TypeToken<List<Contact>>() {}.type
             val savedContacts: List<Contact> = Gson().fromJson(savedContactsJson, type)
-            contactList.addAll(savedContacts)
+            for (contact in savedContacts) {
+                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
+                    contactList.add(contact)
+                }
+            }
         }
 
+        // Sort contacts by name
+        contactList.sortBy { it.name }
+
+        allContacts = contactList
         contactViewModel.setContacts(contactList)
+    }
+
+    private fun filterContacts(query: String) {
+        val filteredContacts = allContacts.filter { it.name.contains(query, ignoreCase = true) }
+        contactViewModel.setContacts(filteredContacts)
     }
 
     override fun onContactAdded(contact: Contact) {
@@ -122,6 +209,10 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
 
+        // Sort contacts by name
+        currentContacts.sortBy { it.name }
+
+        allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
     }
 
@@ -132,13 +223,14 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
 
+        allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
         Toast.makeText(requireContext(), "Contact deleted", Toast.LENGTH_SHORT).show()
     }
 
     private fun saveContactsToPreferences(contacts: List<Contact>) {
         val editor = sharedPreferences.edit()
-        val savedContactsJson = Gson().toJson(contacts.filter { it !in contactViewModel.contacts.value.orEmpty() })
+        val savedContactsJson = Gson().toJson(contacts)
         editor.putString("saved_contacts", savedContactsJson)
         editor.apply()
     }
