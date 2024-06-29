@@ -22,7 +22,7 @@ object DummyData {
             BreadPost("file:///android_asset/breads/meari.jpg", "성심당 메아리 먹으러 가자~ 🍞🍃", "2024-07-07 14:00", 1, 4, "성심당 본점"),
             BreadPost("file:///android_asset/breads/noodle.jpg", "성심당 우동 맛집이라던데... 🍜😋", "2024-07-07 16:00", 1, 4, "성심당 본점"),
             BreadPost("file:///android_asset/breads/salt.jpg", "소금빵 본점에서 먹자~ 🧂🍞", "2024-07-07 18:00", 1, 4, "성심당 본점"),
-            BreadPost("file:///android_asset/breads/sunsu.jpg", "성심당 순수롤 같이 먹으러 가자! 🌞🍰", "2024-07-07 10:00", 1, 4, "성심당 본점")
+            BreadPost("file:///android_asset/breads/sunsu.jpg", "성심당 순수롤 같이 먹으러 가자! 🌞🍰", "2024-07-07 10:00", 1, 4, "성심당 본점"),
         )
     }
 }
