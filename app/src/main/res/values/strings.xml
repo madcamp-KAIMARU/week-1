@@ -16,4 +16,7 @@
     <string name="add">Add</string>
     <string name="upload_image">Update image</string>
     <string name="add_contract">Add Contract</string>
+    <string name="join">Join</string>
+    <string name="close">Close</string>
+    <string name="event_full">Event Full</string>
 </resources>

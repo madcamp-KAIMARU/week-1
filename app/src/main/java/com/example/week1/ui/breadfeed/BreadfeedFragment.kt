@@ -1,6 +1,8 @@
 package com.example.week1.ui.breadfeed
 
 import android.Manifest
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -18,13 +21,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.example.week1.databinding.FragmentBreadfeedBinding
 import com.example.week1.databinding.DialogAddBreadPostBinding
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.util.Calendar
 
-/* BreadfeedFragment displays a grid of bread posts using RecyclerView.
- * It uses a ViewModel to manage the data.
- */
 class BreadfeedFragment : Fragment() {
 
     private var _binding: FragmentBreadfeedBinding? = null
@@ -32,14 +33,12 @@ class BreadfeedFragment : Fragment() {
     private lateinit var adapter: BreadfeedAdapter
     private lateinit var viewModel: BreadfeedViewModel
 
-    // Register an activity result launcher for picking an image
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             showAddBreadPostDialog(it)
         }
     }
 
-    // Register an activity result launcher for requesting permission
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
             pickImage()
@@ -62,18 +61,16 @@ class BreadfeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = BreadfeedAdapter(requireContext(), emptyList())
-        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3) // 3열로 설정
+        adapter = BreadfeedAdapter(requireContext(), emptyList(), childFragmentManager)
+        binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)  // 3 columns
         binding.recyclerView.adapter = adapter
         Log.d("BreadfeedFragment", "onViewCreated: RecyclerView and Adapter set")
 
-        // Observe changes in the bread posts list
         viewModel.breadPosts.observe(viewLifecycleOwner, Observer { newPosts ->
             adapter.updateData(newPosts)
-            binding.recyclerView.scrollToPosition(0)  // Scroll to the top to show the new item
+            binding.recyclerView.scrollToPosition(0)
         })
 
-        // Upload button setup
         val uploadButton: FloatingActionButton = binding.uploadButton
         uploadButton.setOnClickListener {
             requestPermission()
@@ -92,15 +89,12 @@ class BreadfeedFragment : Fragment() {
                 requireContext(),
                 permission
             ) == PackageManager.PERMISSION_GRANTED -> {
-                // Permission is granted, proceed to pick image
                 pickImage()
             }
             shouldShowRequestPermissionRationale(permission) -> {
-                // Show an explanation to the user
                 showPermissionExplanationDialog()
             }
             else -> {
-                // Request the permission
                 requestPermissionLauncher.launch(permission)
             }
         }
@@ -127,7 +121,6 @@ class BreadfeedFragment : Fragment() {
             .setTitle("Permission Denied")
             .setMessage("You have denied the permission to access storage. To upload images, please allow the permission from settings.")
             .setPositiveButton("Settings") { _, _ ->
-                // Open app settings to grant permission
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 val uri = Uri.fromParts("package", requireContext().packageName, null)
                 intent.data = uri
@@ -148,12 +141,33 @@ class BreadfeedFragment : Fragment() {
             .setView(dialogBinding.root)
             .setPositiveButton("Add") { _, _ ->
                 val description = dialogBinding.editTextDescription.text.toString()
-                val newBreadPost = BreadPost(imageUri.toString(), description)
+                val date = dialogBinding.editTextDate.text.toString()
+                val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
+                val newBreadPost = BreadPost(imageUri.toString(), description, date, 0, maxParticipants)
                 viewModel.addBreadPost(newBreadPost)
             }
             .setNegativeButton("Cancel", null)
             .create()
+
+        dialogBinding.editTextDate.setOnClickListener {
+            showDateTimePicker(dialogBinding.editTextDate)
+        }
+
         dialog.show()
+    }
+
+    private fun showDateTimePicker(editText: EditText) {
+        val calendar = Calendar.getInstance()
+
+        val datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+            val timePickerDialog = TimePickerDialog(requireContext(), { _, hourOfDay, minute ->
+                calendar.set(year, month, dayOfMonth, hourOfDay, minute)
+                editText.setText(String.format("%04d-%02d-%02d %02d:%02d", year, month + 1, dayOfMonth, hourOfDay, minute))
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true)
+            timePickerDialog.show()
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+
+        datePickerDialog.show()
     }
 
     override fun onDestroyView() {
