@@ -1,5 +1,7 @@
 package com.example.week1.ui.ratings
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,15 +16,19 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class RatingsFragment : Fragment() {
 
     private lateinit var ratingAdapter: RatingAdapter
     private lateinit var originalRatings: MutableList<RatingItem>
+    private lateinit var filteredRatings: MutableList<RatingItem>
     private lateinit var sortSpinner: Spinner
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,13 +38,16 @@ class RatingsFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view_ratings)
         val searchEditText: EditText = view.findViewById(R.id.search_edit_text)
         sortSpinner = view.findViewById(R.id.sort_spinner)
+        sharedPreferences = requireContext().getSharedPreferences("ratings_prefs", Context.MODE_PRIVATE)
 
-        originalRatings = RatingsDummyData.getRatings().toMutableList()
-        ratingAdapter = RatingAdapter(requireContext(), originalRatings.toMutableList()) { ratingItem ->
+        originalRatings = loadRatings()
+        filteredRatings = originalRatings.toMutableList()
+
+        ratingAdapter = RatingAdapter(requireContext(), filteredRatings) { ratingItem ->
             showRatingDialog(ratingItem)
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = GridLayoutManager(context, 2) // 두 개의 열을 사용하여 Grid로 배치
         recyclerView.adapter = ratingAdapter
 
         searchEditText.addTextChangedListener(object : TextWatcher {
@@ -51,8 +60,8 @@ class RatingsFragment : Fragment() {
 
         // Initialize the Spinner for sorting
         val sortOptions = resources.getStringArray(R.array.sort_options)
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, sortOptions)
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         sortSpinner.adapter = spinnerAdapter
 
         sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -71,11 +80,12 @@ class RatingsFragment : Fragment() {
     }
 
     private fun filterRatings(query: String) {
-        val filteredRatings = if (query.isEmpty()) {
-            originalRatings
+        filteredRatings = if (query.isEmpty()) {
+            originalRatings.toMutableList()
         } else {
             originalRatings.filter { it.breadName.contains(query, ignoreCase = true) }.toMutableList()
         }
+        sortRatings() // 현재 정렬 기준으로 필터링된 리스트를 정렬
         ratingAdapter.updateList(filteredRatings)
     }
 
@@ -88,7 +98,9 @@ class RatingsFragment : Fragment() {
             .setView(dialogView)
             .setPositiveButton("확인") { _, _ ->
                 val newRating = ratingBar.rating
+                ratingItem.myRating = newRating
                 ratingAdapter.updateRating(ratingItem, newRating)
+                saveRatings()
                 Toast.makeText(requireContext(), "${ratingItem.breadName}의 평점이 ${newRating}점으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("취소", null)
@@ -98,17 +110,44 @@ class RatingsFragment : Fragment() {
     }
 
     private fun sortByRatingHighToLow() {
-        originalRatings.sortByDescending { it.peopleRating }
-        ratingAdapter.updateList(originalRatings)
+        filteredRatings.sortByDescending { it.peopleRating }
+        ratingAdapter.updateList(filteredRatings)
     }
 
     private fun sortByRatingLowToHigh() {
-        originalRatings.sortBy { it.peopleRating }
-        ratingAdapter.updateList(originalRatings)
+        filteredRatings.sortBy { it.peopleRating }
+        ratingAdapter.updateList(filteredRatings)
     }
 
     private fun sortByName() {
-        originalRatings.sortBy { it.breadName }
-        ratingAdapter.updateList(originalRatings)
+        filteredRatings.sortBy { it.breadName }
+        ratingAdapter.updateList(filteredRatings)
+    }
+
+    private fun sortRatings() {
+        when (sortSpinner.selectedItemPosition) {
+            0 -> sortByRatingHighToLow()
+            1 -> sortByRatingLowToHigh()
+            2 -> sortByName()
+        }
+    }
+
+    private fun saveRatings() {
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(originalRatings)
+        editor.putString("ratings_list", json)
+        editor.apply()
+    }
+
+    private fun loadRatings(): MutableList<RatingItem> {
+        val gson = Gson()
+        val json = sharedPreferences.getString("ratings_list", null)
+        val type = object : TypeToken<MutableList<RatingItem>>() {}.type
+        return if (json != null) {
+            gson.fromJson(json, type)
+        } else {
+            RatingsDummyData.getRatings().toMutableList()
+        }
     }
 }

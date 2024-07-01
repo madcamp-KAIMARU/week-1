@@ -18,6 +18,7 @@ class RatingAdapter(
 ) : RecyclerView.Adapter<RatingAdapter.RatingViewHolder>() {
 
     inner class RatingViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val positionNumber: TextView = view.findViewById(R.id.position_number)
         val breadImage: ImageView = view.findViewById(R.id.bread_image)
         val breadName: TextView = view.findViewById(R.id.bread_name)
         val peopleRatingText: TextView = view.findViewById(R.id.people_rating_text)
@@ -33,6 +34,7 @@ class RatingAdapter(
 
     override fun onBindViewHolder(holder: RatingViewHolder, position: Int) {
         val item = items[position]
+        holder.positionNumber.text = (position + 1).toString()
         Glide.with(context).load(item.breadImage).into(holder.breadImage)
         holder.breadName.text = item.breadName
         holder.peopleRatingText.text = item.peopleRating.toString()
@@ -45,12 +47,13 @@ class RatingAdapter(
             holder.myRating.rating = item.myRating
         }
 
-        val ratingClickListener = View.OnClickListener {
+        holder.myRating.setOnClickListener {
             onMyRatingClick(item)
         }
 
-        holder.myRating.setOnClickListener(ratingClickListener)
-        holder.myRatingText.setOnClickListener(ratingClickListener)
+        holder.myRatingText.setOnClickListener {
+            onMyRatingClick(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size
