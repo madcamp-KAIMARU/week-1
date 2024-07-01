@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import com.example.week1.R
 
@@ -36,7 +38,7 @@ class ContactAdapter(private val context: Context, private val contacts: List<Co
             holder.nameTextView = view.findViewById(R.id.contactName)
             holder.numberTextView = view.findViewById(R.id.contactNumber)
             holder.imageView = view.findViewById(R.id.contactImage)
-            holder.deleteButton = view.findViewById(R.id.deleteButton)
+            holder.moreButton = view.findViewById(R.id.moreButton)
             view.tag = holder
         } else {
             view = convertView
@@ -55,17 +57,32 @@ class ContactAdapter(private val context: Context, private val contacts: List<Co
             context.startActivity(intent)
         }
 
-        holder.deleteButton?.setOnClickListener {
-            deleteListener(contact)
+        holder.moreButton?.setOnClickListener {
+            showPopupMenu(it, contact)
         }
 
         return view
+    }
+
+    private fun showPopupMenu(view: View, contact: Contact) {
+        val popup = PopupMenu(context, view)
+        popup.inflate(R.menu.contact_options_menu)
+        popup.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.delete -> {
+                    deleteListener(contact)
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
     }
 
     private class ViewHolder {
         var nameTextView: TextView? = null
         var numberTextView: TextView? = null
         var imageView: ImageView? = null
-        var deleteButton: ImageButton? = null
+        var moreButton: ImageButton? = null
     }
 }

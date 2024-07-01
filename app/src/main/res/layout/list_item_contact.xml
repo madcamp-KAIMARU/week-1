@@ -19,13 +19,13 @@
 
         <ImageView
             android:id="@+id/contactImage"
-            android:layout_width="50dp"
+            android:layout_width="55dp"
             android:layout_height="50dp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/croissant"
             android:scaleType="centerCrop"
             android:layout_marginEnd="16dp"
-            android:background="?android:attr/selectableItemBackground" />
+            android:background="@xml/rounded_image_border" /> <!-- 둥근 테두리 배경 설정 -->
 
         <LinearLayout
             android:layout_width="0dp"
@@ -50,15 +50,15 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/deleteButton"
+            android:id="@+id/moreButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="48dp"
             android:minHeight="48dp"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/ic_more_vert"
             android:background="?android:attr/selectableItemBackground"
             android:layout_gravity="center_vertical"
-            android:contentDescription="Delete Contact" />
+            android:contentDescription="More Options" />
     </LinearLayout>
 
     <View
