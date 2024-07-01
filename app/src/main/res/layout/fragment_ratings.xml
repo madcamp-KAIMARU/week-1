@@ -4,9 +4,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_ratings"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp" />
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="🔍 찾고 싶은 빵을 검색하세요"
+            android:padding="18dp"
+            android:layout_marginTop="15dp"
+            android:background="@xml/rounded_search_bar"
+            android:textSize="16sp"
+            android:inputType="text"
+            androidx:layout_constraintTop_toTopOf="parent"
+            androidx:layout_constraintLeft_toLeftOf="parent"
+            androidx:layout_constraintRight_toRightOf="parent"
+            androidx:layout_constraintWidth_percent="0.9" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_ratings"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            androidx:layout_constraintTop_toBottomOf="@id/search_edit_text"
+            androidx:layout_constraintBottom_toBottomOf="parent"
+            androidx:layout_constraintLeft_toLeftOf="parent"
+            androidx:layout_constraintRight_toRightOf="parent"
+            androidx:layout_constraintWidth_percent="0.93" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

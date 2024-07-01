@@ -1,9 +1,12 @@
 package com.example.week1.ui.ratings
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.RatingBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -15,6 +18,7 @@ import com.example.week1.R
 class RatingsFragment : Fragment() {
 
     private lateinit var ratingAdapter: RatingAdapter
+    private lateinit var originalRatings: MutableList<RatingItem>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,15 +26,34 @@ class RatingsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_ratings, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view_ratings)
+        val searchEditText: EditText = view.findViewById(R.id.search_edit_text)
 
-        ratingAdapter = RatingAdapter(requireContext(), RatingsDummyData.getRatings().toMutableList()) { ratingItem ->
+        originalRatings = RatingsDummyData.getRatings().toMutableList()
+        ratingAdapter = RatingAdapter(requireContext(), originalRatings.toMutableList()) { ratingItem ->
             showRatingDialog(ratingItem)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = ratingAdapter
 
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterRatings(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         return view
+    }
+
+    private fun filterRatings(query: String) {
+        val filteredRatings = if (query.isEmpty()) {
+            originalRatings
+        } else {
+            originalRatings.filter { it.breadName.contains(query, ignoreCase = true) }.toMutableList()
+        }
+        ratingAdapter.updateList(filteredRatings)
     }
 
     private fun showRatingDialog(ratingItem: RatingItem) {
