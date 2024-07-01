@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -127,15 +128,25 @@ class BreadfeedFragment : Fragment() {
 
     private fun showUploadOptionsDialog() {
         Log.d("BreadfeedFragment", "Showing upload options dialog")
-        AlertDialog.Builder(requireContext())
-            .setTitle("Select Option")
-            .setItems(arrayOf("Take Photo", "Choose from Gallery")) { dialog, which ->
-                when (which) {
-                    0 -> requestPermissionsForCamera() // 카메라 및 저장소 권한을 요청합니다.
-                    1 -> requestGalleryPermission()
-                }
-            }
-            .show()
+
+        val dialogBinding = LayoutInflater.from(context).inflate(R.layout.dialog_upload_options, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background) // 다이얼로그 배경 설정
+
+        dialogBinding.findViewById<Button>(R.id.buttonTakePhoto).setOnClickListener {
+            dialog.dismiss()
+            requestPermissionsForCamera()
+        }
+
+        dialogBinding.findViewById<Button>(R.id.buttonChooseFromGallery).setOnClickListener {
+            dialog.dismiss()
+            requestGalleryPermission()
+        }
+
+        dialog.show()
     }
 
     private fun requestPermissionsForCamera() {
