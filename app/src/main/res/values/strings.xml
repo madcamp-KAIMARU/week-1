@@ -16,8 +16,8 @@
     <string name="add">Add</string>
     <string name="upload_image">Update image</string>
     <string name="add_contact">Add Contract</string>
-    <string name="join_now">Join Now</string>
-    <string name="joined">Already Joined</string>
+    <string name="join_now">함께하기</string>
+    <string name="joined">참여중!</string>
     <string name="close">Close</string>
     <string name="event_full">Event Full</string>
     <string name="sync_contacts">Sync Contacts</string>
