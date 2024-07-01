@@ -18,7 +18,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -71,27 +70,20 @@ class BreadfeedFragment : Fragment() {
             }
         }
 
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                Log.d("BreadfeedFragment", "Permission granted")
-                pickImage()
-            } else {
-                Log.d("BreadfeedFragment", "Permission denied")
-                showPermissionDeniedDialog()
-            }
-        }
-
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var allGranted = true
             permissions.entries.forEach {
                 val permissionName = it.key
                 val isGranted = it.value
                 Log.d("BreadfeedFragment", "$permissionName granted: $isGranted")
+                if (!isGranted) {
+                    allGranted = false
+                }
             }
 
-            if (permissions[Manifest.permission.CAMERA] == true && permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true) {
-                openCamera()
+            if (allGranted) {
+                proceedWithCamera()
             } else {
                 showPermissionDeniedDialog()
             }
@@ -138,25 +130,28 @@ class BreadfeedFragment : Fragment() {
             .setTitle("Select Option")
             .setItems(arrayOf("Take Photo", "Choose from Gallery")) { dialog, which ->
                 when (which) {
-                    0 -> requestPermissions() // 카메라 및 저장소 권한을 요청합니다.
+                    0 -> requestPermissionsForCamera() // 카메라 및 저장소 권한을 요청합니다.
                     1 -> requestGalleryPermission()
                 }
             }
             .show()
     }
 
-    private fun requestPermissions() {
+    private fun requestPermissionsForCamera() {
         val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_MEDIA_IMAGES
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            arrayOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE
             )
         } else {
             arrayOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE
             )
         }
         val permissionsToRequest = permissions.filter {
@@ -169,7 +164,7 @@ class BreadfeedFragment : Fragment() {
         if (permissionsToRequest.isNotEmpty()) {
             requestPermissionsLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
-            openCamera()
+            proceedWithCamera()
         }
     }
 
@@ -196,7 +191,7 @@ class BreadfeedFragment : Fragment() {
 
             else -> {
                 Log.d("BreadfeedFragment", "Requesting gallery permission")
-                requestPermissionLauncher.launch(permission)
+                requestPermissionsLauncher.launch(arrayOf(permission))
             }
         }
     }
@@ -212,7 +207,7 @@ class BreadfeedFragment : Fragment() {
                 } else {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 }
-                requestPermissionLauncher.launch(permission)
+                requestPermissionsLauncher.launch(arrayOf(permission))
             }
             .setNegativeButton("Cancel", null)
             .show()
@@ -238,7 +233,7 @@ class BreadfeedFragment : Fragment() {
         pickImageLauncher.launch("image/*")
     }
 
-    private fun openCamera() {
+    private fun proceedWithCamera() {
         Log.d("BreadfeedFragment", "Opening camera")
         takePhotoLauncher.launch(null)
     }
