@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     tools:context=".ui.contact.ContactFragment">
 
     <TextView
         android:id="@+id/contactTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="빵친 리스트"
-        android:textSize="26sp"
+        android:fontFamily="@font/bagelfatone_regular"
+        android:text="빵빵이와 친구들"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/primaryTextColor"
         android:gravity="center"
@@ -25,8 +27,8 @@
         android:id="@+id/searchBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="🔍 Search contacts"
-        android:padding="18dp"
+        android:hint="🔍 연락처 검색"
+        android:padding="16dp"
         android:layout_marginTop="15dp"
         android:background="@xml/rounded_search_bar"
         app:layout_constraintTop_toBottomOf="@id/contactTitle"
@@ -42,7 +44,7 @@
         android:padding="8dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="@android:color/white"
+        android:background="@color/backgroundColor"
         app:layout_constraintTop_toBottomOf="@id/searchBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -59,6 +61,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:backgroundTint="@color/fab_color"
+        app:tint="@android:color/white"
         app:maxImageSize="48dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -71,7 +74,8 @@
         android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@id/fab_add"
         app:layout_constraintRight_toRightOf="parent"
-        app:backgroundTint="@color/fab_color" />
+        app:backgroundTint="@color/fab_color"
+        app:tint="@android:color/white" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
@@ -83,6 +87,7 @@
         android:layout_margin="16dp"
         app:layout_constraintBottom_toTopOf="@id/fab_main"
         app:layout_constraintRight_toRightOf="parent"
-        app:backgroundTint="@color/fab_color" />
+        app:backgroundTint="@color/fab_color"
+        app:tint="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
