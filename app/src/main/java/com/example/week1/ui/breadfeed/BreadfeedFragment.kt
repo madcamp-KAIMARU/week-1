@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,9 +25,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.week1.CameraActivity
 import com.example.week1.databinding.FragmentBreadfeedBinding
 import com.example.week1.databinding.DialogAddBreadPostBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
 
 class BreadfeedFragment : Fragment() {
@@ -39,6 +41,13 @@ class BreadfeedFragment : Fragment() {
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             showAddBreadPostDialog(it)
+        }
+    }
+
+    private val takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        bitmap?.let {
+            val uri = Uri.parse(MediaStore.Images.Media.insertImage(requireContext().contentResolver, bitmap, "New Photo", null))
+            showAddBreadPostDialog(uri)
         }
     }
 
@@ -76,8 +85,20 @@ class BreadfeedFragment : Fragment() {
 
         val uploadButton: FloatingActionButton = binding.uploadButton
         uploadButton.setOnClickListener {
-            requestPermission()
+            showUploadOptionsDialog()
         }
+    }
+
+    private fun showUploadOptionsDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select Option")
+            .setItems(arrayOf("Take Photo", "Choose from Gallery")) { dialog, which ->
+                when (which) {
+                    0 -> openCamera()
+                    1 -> requestPermission()
+                }
+            }
+            .show()
     }
 
     private fun requestPermission() {
@@ -135,6 +156,10 @@ class BreadfeedFragment : Fragment() {
 
     private fun pickImage() {
         pickImageLauncher.launch("image/*")
+    }
+
+    private fun openCamera() {
+        takePhotoLauncher.launch(null)
     }
 
     private fun showAddBreadPostDialog(imageUri: Uri) {
