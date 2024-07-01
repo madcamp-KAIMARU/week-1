@@ -284,6 +284,11 @@ class BreadfeedFragment : Fragment() {
         dialogBinding.editTextMaxParticipants.addTextChangedListener(textWatcher)
         dialogBinding.editTextWhere2Meet.addTextChangedListener(textWatcher)
 
+        // 날짜 및 시간 선택을 위해 클릭 이벤트 설정
+        dialogBinding.editTextDate.setOnClickListener {
+            showDateTimePicker(dialogBinding.editTextDate)
+        }
+
         dialogBinding.buttonSave.setOnClickListener {
             val description = dialogBinding.editTextDescription.text.toString()
             val date = dialogBinding.editTextDate.text.toString()
