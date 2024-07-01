@@ -69,5 +69,6 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.0.0-alpha23")
     implementation ("androidx.camera:camera-extensions:1.0.0-alpha23")
 
+    implementation ("androidx.cardview:cardview:1.0.0")
     //implementation("io.github.yavski:fab-speed-dial:1.0.6")
 }

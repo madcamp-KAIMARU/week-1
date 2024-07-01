@@ -32,7 +32,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
 
     private lateinit var contactViewModel: ContactViewModel
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var allContacts: List<Contact>
+    private lateinit var allContacts: MutableList<Contact>
 
     private var isFabMenuOpen = false
 
@@ -151,7 +151,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     }
 
     private fun synchronizeContacts() {
-        val contactList = mutableListOf<Contact>()
+        val currentContacts = allContacts.toMutableList()
 
         // Load contacts from phone
         val resolver = requireContext().contentResolver
@@ -171,29 +171,20 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
                 val name = cursor.getString(nameIndex)
                 val number = cursor.getString(numberIndex)
                 val contact = Contact(name, number)
-                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
-                    contactList.add(contact)
-                }
-            }
-        }
-
-        // Load contacts from SharedPreferences
-        val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
-        if (!savedContactsJson.isNullOrEmpty()) {
-            val type = object : TypeToken<List<Contact>>() {}.type
-            val savedContacts: List<Contact> = Gson().fromJson(savedContactsJson, type)
-            for (contact in savedContacts) {
-                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
-                    contactList.add(contact)
+                if (!currentContacts.any { it.name == contact.name && it.number == contact.number }) {
+                    currentContacts.add(contact)
                 }
             }
         }
 
         // Sort contacts by name
-        contactList.sortBy { it.name }
+        currentContacts.sortBy { it.name }
 
-        allContacts = contactList
-        contactViewModel.setContacts(contactList)
+        allContacts = currentContacts
+        contactViewModel.setContacts(currentContacts)
+
+        // Save synchronized contacts to SharedPreferences
+        saveContactsToPreferences(currentContacts)
     }
 
     private fun filterContacts(query: String) {
