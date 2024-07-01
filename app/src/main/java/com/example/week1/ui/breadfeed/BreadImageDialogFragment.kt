@@ -89,10 +89,6 @@ class BreadImageDialogFragment : DialogFragment() {
         binding.buttonClose.setOnClickListener {
             dismiss()
         }
-
-        binding.root.setOnClickListener {
-            dismiss()
-        }
     }
 
     override fun onStart() {
