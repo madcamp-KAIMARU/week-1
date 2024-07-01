@@ -6,7 +6,12 @@
     </style>
 
     <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:textSize">14sp</item> <!-- Adjust text size as needed -->
-        <item name="android:padding">8dp</item> <!-- Adjust padding as needed -->
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="SpinnerTextStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:textSize">12sp</item>
+        <item name="android:padding">4dp</item>
     </style>
 </resources>

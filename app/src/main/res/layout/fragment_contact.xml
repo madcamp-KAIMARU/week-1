@@ -28,6 +28,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="🔍 연락처 검색"
+        android:fontFamily="@font/main_font"
         android:padding="16dp"
         android:layout_marginTop="15dp"
         android:background="@xml/rounded_search_bar"
