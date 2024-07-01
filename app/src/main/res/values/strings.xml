@@ -21,4 +21,10 @@
     <string name="close">Close</string>
     <string name="event_full">Event Full</string>
     <string name="sync_contacts">Sync Contacts</string>
+    <string-array name="sort_options">
+        <item>평점 높은 순</item>
+        <item>평점 낮은 순</item>
+        <item>가나다순</item>
+    </string-array>
+
 </resources>
