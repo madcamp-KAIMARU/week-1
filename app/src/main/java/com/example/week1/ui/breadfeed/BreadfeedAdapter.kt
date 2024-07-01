@@ -1,12 +1,15 @@
 package com.example.week1.ui.breadfeed
 
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.week1.databinding.ItemBreadPostBinding
+import com.example.week1.utils.BlurUtils
 
 class BreadfeedAdapter(
     private val context: Context,
@@ -20,6 +23,18 @@ class BreadfeedAdapter(
                 .load(breadPost.imageUrl)
                 .centerCrop()
                 .into(binding.imageView)
+
+            // hasJoined에 따라 이미지 블러 처리 및 텍스트 표시
+            if (breadPost.hasJoined && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                BlurUtils.blur(binding.imageView)
+                binding.textViewJoined.visibility = View.VISIBLE
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    binding.imageView.setRenderEffect(null)
+                }
+                binding.textViewJoined.visibility = View.GONE
+            }
+
             binding.root.setOnClickListener {
                 val dialog = BreadImageDialogFragment.newInstance(breadPost)
                 dialog.setOnBreadPostUpdatedListener(object : BreadImageDialogFragment.OnBreadPostUpdatedListener {
