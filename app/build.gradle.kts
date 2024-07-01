@@ -36,6 +36,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.10")
     implementation("androidx.core:core-ktx:1.6.0")
@@ -61,6 +62,12 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.0")
     implementation ("com.google.android.material:material:1.4.0")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
+
+    implementation ("androidx.camera:camera-core:1.1.0-alpha05")
+    implementation ("androidx.camera:camera-camera2:1.1.0-alpha05")
+    implementation ("androidx.camera:camera-lifecycle:1.1.0-alpha05")
+    implementation ("androidx.camera:camera-view:1.0.0-alpha23")
+    implementation ("androidx.camera:camera-extensions:1.0.0-alpha23")
 
     //implementation("io.github.yavski:fab-speed-dial:1.0.6")
 }
