@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:padding="16dp"
-        android:background="@android:color/white">
+        android:background="@drawable/dialog_background">
 
         <ImageView
             android:id="@+id/imageView"
@@ -114,17 +114,23 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/join_now"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_marginEnd="8dp"/>
+                android:text="참여하기"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_background"
+                android:layout_marginEnd="8dp"
+                android:padding="12dp"
+                android:fontFamily="@font/main_font"/>
 
             <Button
                 android:id="@+id/buttonClose"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/close"
-                style="@style/Widget.AppCompat.Button.Colored"/>
+                android:text="닫기"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_background"
+                android:padding="12dp"
+                android:fontFamily="@font/main_font"/>
         </LinearLayout>
 
     </LinearLayout>

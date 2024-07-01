@@ -17,6 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -29,6 +30,7 @@ import com.example.week1.databinding.FragmentBreadfeedBinding
 import com.example.week1.databinding.DialogAddBreadPostBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
+import com.example.week1.R
 
 class BreadfeedFragment : Fragment() {
 
@@ -126,15 +128,25 @@ class BreadfeedFragment : Fragment() {
 
     private fun showUploadOptionsDialog() {
         Log.d("BreadfeedFragment", "Showing upload options dialog")
-        AlertDialog.Builder(requireContext())
-            .setTitle("Select Option")
-            .setItems(arrayOf("Take Photo", "Choose from Gallery")) { dialog, which ->
-                when (which) {
-                    0 -> requestPermissionsForCamera() // 카메라 및 저장소 권한을 요청합니다.
-                    1 -> requestGalleryPermission()
-                }
-            }
-            .show()
+
+        val dialogBinding = LayoutInflater.from(context).inflate(R.layout.dialog_upload_options, null)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background) // 다이얼로그 배경 설정
+
+        dialogBinding.findViewById<Button>(R.id.buttonTakePhoto).setOnClickListener {
+            dialog.dismiss()
+            requestPermissionsForCamera()
+        }
+
+        dialogBinding.findViewById<Button>(R.id.buttonChooseFromGallery).setOnClickListener {
+            dialog.dismiss()
+            requestGalleryPermission()
+        }
+
+        dialog.show()
     }
 
     private fun requestPermissionsForCamera() {
@@ -237,32 +249,22 @@ class BreadfeedFragment : Fragment() {
         Log.d("BreadfeedFragment", "Opening camera")
         takePhotoLauncher.launch(null)
     }
-
     private fun showAddBreadPostDialog(imageUri: Uri) {
         Log.d("BreadfeedFragment", "Showing add bread post dialog with URI: $imageUri")
         val dialogBinding = DialogAddBreadPostBinding.inflate(layoutInflater)
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Add Bread Post")
             .setView(dialogBinding.root)
-            .setPositiveButton("Add") { _, _ ->
-                val description = dialogBinding.editTextDescription.text.toString()
-                val date = dialogBinding.editTextDate.text.toString()
-                val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
-                val where2Meet = dialogBinding.editTextWhere2Meet.text.toString()
-                val newBreadPost = BreadPost(
-                    imageUri.toString(),
-                    description,
-                    date,
-                    1,
-                    maxParticipants,
-                    where2Meet,
-                    true,
-                )
-                viewModel.addBreadPost(newBreadPost)
-                Log.d("BreadfeedFragment", "New bread post added: $newBreadPost")
-            }
-            .setNegativeButton("Cancel", null)
             .create()
+
+        // 다이얼로그 창의 배경을 설정
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_background)
+
+        dialogBinding.buttonCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // 초기 상태에서 저장 버튼을 비활성화
+        dialogBinding.buttonSave.isEnabled = false
 
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -270,23 +272,40 @@ class BreadfeedFragment : Fragment() {
                 val description = dialogBinding.editTextDescription.text.toString().trim()
                 val date = dialogBinding.editTextDate.text.toString().trim()
                 val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().trim()
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                    description.isNotEmpty() && date.isNotEmpty() && maxParticipants.isNotEmpty()
+                val where2Meet = dialogBinding.editTextWhere2Meet.text.toString().trim()
+                dialogBinding.buttonSave.isEnabled =
+                    description.isNotEmpty() && date.isNotEmpty() && maxParticipants.isNotEmpty() && where2Meet.isNotEmpty()
             }
-
             override fun afterTextChanged(s: Editable?) {}
         }
 
         dialogBinding.editTextDescription.addTextChangedListener(textWatcher)
         dialogBinding.editTextDate.addTextChangedListener(textWatcher)
         dialogBinding.editTextMaxParticipants.addTextChangedListener(textWatcher)
+        dialogBinding.editTextWhere2Meet.addTextChangedListener(textWatcher)
 
+        // 날짜 및 시간 선택을 위해 클릭 이벤트 설정
         dialogBinding.editTextDate.setOnClickListener {
             showDateTimePicker(dialogBinding.editTextDate)
         }
 
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+        dialogBinding.buttonSave.setOnClickListener {
+            val description = dialogBinding.editTextDescription.text.toString()
+            val date = dialogBinding.editTextDate.text.toString()
+            val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
+            val where2Meet = dialogBinding.editTextWhere2Meet.text.toString()
+            val newBreadPost = BreadPost(
+                imageUri.toString(),
+                description,
+                date,
+                1,
+                maxParticipants,
+                where2Meet,
+                true,
+            )
+            viewModel.addBreadPost(newBreadPost)
+            Log.d("BreadfeedFragment", "New bread post added: $newBreadPost")
+            dialog.dismiss()
         }
 
         dialog.show()
