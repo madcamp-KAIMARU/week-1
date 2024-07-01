@@ -1,3 +1,4 @@
+// ui/ratings/RatingAdapter.kt
 package com.example.week1.ui.ratings
 
 import android.content.Context
@@ -13,7 +14,7 @@ import com.example.week1.R
 
 class RatingAdapter(
     private val context: Context,
-    private var items: MutableList<RatingItem>,
+    private val items: MutableList<RatingItem>,
     private val onMyRatingClick: (RatingItem) -> Unit
 ) : RecyclerView.Adapter<RatingAdapter.RatingViewHolder>() {
 
@@ -61,10 +62,5 @@ class RatingAdapter(
             items[index] = item.copy(myRating = newRating)
             notifyItemChanged(index)
         }
-    }
-
-    fun updateList(newItems: MutableList<RatingItem>) {
-        items = newItems
-        notifyDataSetChanged()
     }
 }
