@@ -1,7 +1,6 @@
 package com.example.week1.ui.breadfeed
 
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,8 +21,16 @@ class BreadImageDialogFragment : DialogFragment() {
     private var _binding: FragmentBreadImageDialogBinding? = null
     private val binding get() = _binding!!
 
-    private var currentParticipants: Int = 0
-    private var maxParticipants: Int = 0
+    private lateinit var breadPost: BreadPost
+    private var listener: OnBreadPostUpdatedListener? = null
+
+    interface OnBreadPostUpdatedListener {
+        fun onBreadPostUpdated(updatedBreadPost: BreadPost)
+    }
+
+    fun setOnBreadPostUpdatedListener(listener: OnBreadPostUpdatedListener) {
+        this.listener = listener
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,65 +42,74 @@ class BreadImageDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val context = requireContext()
-        val imageUrl = arguments?.getString("image_url")
-        val description = arguments?.getString("description")
-        val date = arguments?.getString("date")
-        val where2Meet = arguments?.getString("where_to_meet")
-        currentParticipants = arguments?.getInt("current_participants") ?: 0
-        maxParticipants = arguments?.getInt("max_participants") ?: 0
 
-        if (imageUrl != null) {
-            Glide.with(context)
-                .load(imageUrl)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.e("BreadImageDialogFragment", "Image load failed", e)
-                        return false
-                    }
+        breadPost = arguments?.getParcelable("bread_post") ?: return
 
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        Log.d("BreadImageDialogFragment", "Image loaded successfully")
-                        return false
-                    }
-                })
-                .into(binding.imageView)
-        }
+        Glide.with(requireContext())
+            .load(breadPost.imageUrl)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Log.e("BreadImageDialogFragment", "Image load failed", e)
+                    return false
+                }
 
-        binding.textViewDescription.text = description
-        binding.textViewDate.text = date
-        binding.textViewParticipants.text = "$currentParticipants / $maxParticipants"
-        binding.textViewWhere2Meet.text = where2Meet
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    Log.d("BreadImageDialogFragment", "Image loaded successfully")
+                    return false
+                }
+            })
+            .into(binding.imageView)
+
+        binding.textViewDescription.text = breadPost.description
+        binding.textViewDate.text = breadPost.date
+        binding.textViewParticipants.text =
+            "${breadPost.currentParticipants} / ${breadPost.maxParticipants}"
+        binding.textViewWhere2Meet.text = breadPost.where2Meet
+
+        // 버튼 텍스트 설정
+        binding.buttonJoin.text =
+            if (breadPost.hasJoined) getString(R.string.joined) else getString(R.string.join_now)
 
         binding.buttonJoin.setOnClickListener {
-            if (currentParticipants < maxParticipants) {
-                currentParticipants++
-                binding.textViewParticipants.text = "$currentParticipants / $maxParticipants"
-                // Update the data source (e.g., ViewModel, database)
+            if (breadPost.currentParticipants < breadPost.maxParticipants || breadPost.hasJoined) {
+                breadPost.hasJoined = !breadPost.hasJoined
+                if (breadPost.hasJoined) {
+                    breadPost.currentParticipants++
+                    binding.buttonJoin.text = getString(R.string.joined)
+                } else {
+                    breadPost.currentParticipants--
+                    binding.buttonJoin.text = getString(R.string.join_now)
+                }
+                binding.textViewParticipants.text =
+                    "${breadPost.currentParticipants} / ${breadPost.maxParticipants}"
             } else {
                 Toast.makeText(context, getString(R.string.event_full), Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.buttonClose.setOnClickListener {
+            listener?.onBreadPostUpdated(breadPost)
             dismiss()
         }
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
     }
 
     override fun onDestroyView() {
@@ -102,15 +118,10 @@ class BreadImageDialogFragment : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(imageUrl: String, description: String, date: String, currentParticipants: Int, maxParticipants: Int, where2Meet: String): BreadImageDialogFragment {
+        fun newInstance(breadPost: BreadPost): BreadImageDialogFragment {
             val fragment = BreadImageDialogFragment()
             val args = Bundle()
-            args.putString("image_url", imageUrl)
-            args.putString("description", description)
-            args.putString("date", date)
-            args.putInt("current_participants", currentParticipants)
-            args.putInt("max_participants", maxParticipants)
-            args.putString("where_to_meet", where2Meet)
+            args.putParcelable("bread_post", breadPost)
             fragment.arguments = args
             return fragment
         }

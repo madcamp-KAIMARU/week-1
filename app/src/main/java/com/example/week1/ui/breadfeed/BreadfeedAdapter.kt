@@ -10,7 +10,7 @@ import com.example.week1.databinding.ItemBreadPostBinding
 
 class BreadfeedAdapter(
     private val context: Context,
-    private var breadPosts: List<BreadPost>,
+    private var breadPosts: MutableList<BreadPost>,
     private val fragmentManager: FragmentManager
 ) : RecyclerView.Adapter<BreadfeedAdapter.ViewHolder>() {
 
@@ -21,11 +21,14 @@ class BreadfeedAdapter(
                 .centerCrop()
                 .into(binding.imageView)
             binding.root.setOnClickListener {
-                val dialog = BreadImageDialogFragment.newInstance(
-                    breadPost.imageUrl, breadPost.description,
-                    breadPost.date, breadPost.currentParticipants, breadPost.maxParticipants,
-                    breadPost.where2Meet
-                )
+                val dialog = BreadImageDialogFragment.newInstance(breadPost)
+                dialog.setOnBreadPostUpdatedListener(object : BreadImageDialogFragment.OnBreadPostUpdatedListener {
+                    override fun onBreadPostUpdated(updatedBreadPost: BreadPost) {
+                        val position = adapterPosition.takeIf { it != RecyclerView.NO_POSITION } ?: return
+                        breadPosts[position] = updatedBreadPost
+                        notifyItemChanged(position)
+                    }
+                })
                 dialog.show(fragmentManager, "BreadImageDialogFragment")
             }
         }
@@ -43,7 +46,7 @@ class BreadfeedAdapter(
     override fun getItemCount(): Int = breadPosts.size
 
     fun updateData(newPosts: List<BreadPost>) {
-        breadPosts = newPosts
+        breadPosts = newPosts.toMutableList()
         notifyDataSetChanged()
     }
 }

@@ -111,7 +111,11 @@ class BreadfeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("BreadfeedFragment", "onViewCreated")
 
-        adapter = BreadfeedAdapter(requireContext(), emptyList(), childFragmentManager)
+        adapter = BreadfeedAdapter(
+            requireContext(),
+            mutableListOf(),
+            childFragmentManager
+        ) // 수정: emptyList<BreadPost>()로 변경
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)  // 3 columns
         binding.recyclerView.adapter = adapter
         Log.d("BreadfeedFragment", "RecyclerView and Adapter set")
@@ -256,7 +260,8 @@ class BreadfeedFragment : Fragment() {
                     date,
                     1,
                     maxParticipants,
-                    where2Meet
+                    where2Meet,
+                    true,
                 )
                 viewModel.addBreadPost(newBreadPost)
                 Log.d("BreadfeedFragment", "New bread post added: $newBreadPost")
