@@ -6,8 +6,11 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.RatingBar
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -19,6 +22,7 @@ class RatingsFragment : Fragment() {
 
     private lateinit var ratingAdapter: RatingAdapter
     private lateinit var originalRatings: MutableList<RatingItem>
+    private lateinit var sortSpinner: Spinner
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +31,7 @@ class RatingsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_ratings, container, false)
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view_ratings)
         val searchEditText: EditText = view.findViewById(R.id.search_edit_text)
+        sortSpinner = view.findViewById(R.id.sort_spinner)
 
         originalRatings = RatingsDummyData.getRatings().toMutableList()
         ratingAdapter = RatingAdapter(requireContext(), originalRatings.toMutableList()) { ratingItem ->
@@ -43,6 +48,24 @@ class RatingsFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        // Initialize the Spinner for sorting
+        val sortOptions = resources.getStringArray(R.array.sort_options)
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sortOptions)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        sortSpinner.adapter = spinnerAdapter
+
+        sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                when (position) {
+                    0 -> sortByRatingHighToLow()
+                    1 -> sortByRatingLowToHigh()
+                    2 -> sortByName()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         return view
     }
@@ -72,5 +95,20 @@ class RatingsFragment : Fragment() {
             .create()
 
         dialog.show()
+    }
+
+    private fun sortByRatingHighToLow() {
+        originalRatings.sortByDescending { it.peopleRating }
+        ratingAdapter.updateList(originalRatings)
+    }
+
+    private fun sortByRatingLowToHigh() {
+        originalRatings.sortBy { it.peopleRating }
+        ratingAdapter.updateList(originalRatings)
+    }
+
+    private fun sortByName() {
+        originalRatings.sortBy { it.breadName }
+        ratingAdapter.updateList(originalRatings)
     }
 }
