@@ -5,9 +5,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -43,7 +46,11 @@ class RatingsFragment : Fragment() {
         filteredRatings = originalRatings.toMutableList()
 
         ratingAdapter = RatingAdapter(requireContext(), filteredRatings) { ratingItem ->
-            navigateToReviewFragment(ratingItem)
+            if (hasReviews(ratingItem.breadName)) {
+                navigateToReviewListFragment(ratingItem)
+            } else {
+                navigateToReviewFragment(ratingItem)
+            }
         }
 
         recyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -80,6 +87,14 @@ class RatingsFragment : Fragment() {
             updateRating(breadName, myRating)
         }
 
+        // 터치 이벤트를 설정하여 EditText 외의 영역을 클릭하면 키보드가 닫히도록 함
+        view.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            false
+        }
+
         return view
     }
 
@@ -108,6 +123,20 @@ class RatingsFragment : Fragment() {
         }
     }
 
+    private fun navigateToReviewListFragment(ratingItem: RatingItem) {
+        val reviewListFragment = ReviewListFragment().apply {
+            arguments = Bundle().apply {
+                putString("breadName", ratingItem.breadName)
+            }
+        }
+
+        parentFragmentManager.commit {
+            setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+            replace(R.id.nav_host_fragment_activity_main, reviewListFragment)
+            addToBackStack(null)
+        }
+    }
+
     private fun updateRating(breadName: String?, newRating: Float) {
         if (breadName != null) {
             originalRatings.find { it.breadName == breadName }?.let {
@@ -116,6 +145,13 @@ class RatingsFragment : Fragment() {
                 ratingAdapter.updateList(filteredRatings) // update filtered list
             }
         }
+    }
+
+    private fun hasReviews(breadName: String): Boolean {
+        val reviews = loadReviews()
+        val hasReview = reviews.any { it.breadName == breadName && it.reviewContent.isNotEmpty() }
+        Log.d("RatingsFragment", "hasReviews for $breadName: $hasReview, reviews: $reviews")
+        return hasReview
     }
 
     private fun sortByRatingHighToLow() {
@@ -159,5 +195,21 @@ class RatingsFragment : Fragment() {
         } else {
             RatingsDummyData.getRatings().toMutableList()
         }
+    }
+
+    private fun loadReviews(): List<ReviewItem> {
+        val gson = Gson()
+        val json = sharedPreferences.getString("reviews_list", null)
+        val type = object : TypeToken<List<ReviewItem>>() {}.type
+        return if (json != null) {
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }

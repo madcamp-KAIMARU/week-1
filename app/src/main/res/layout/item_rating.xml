@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="14dp">
 
         <TextView
             android:id="@+id/position_number"
@@ -50,15 +49,34 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/main_font" />
 
-        <TextView
-            android:id="@+id/people_rating_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="4.55"
-            android:textColor="@android:color/darker_gray"
-            android:paddingTop="4dp"
-            android:fontFamily="@font/main_font" />
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/people_rating_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="전체 평점"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="16sp"
+                android:fontFamily="@font/main_font"
+                android:gravity="center"
+                android:paddingRight="10dp"/>
+
+            <TextView
+                android:id="@+id/people_rating_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="4.55"
+                android:textStyle="bold"
+                android:textColor="@android:color/darker_gray"
+                android:fontFamily="@font/main_font" />
+        </LinearLayout>
 
         <RatingBar
             android:id="@+id/people_rating"
@@ -71,17 +89,39 @@
             android:isIndicator="true"
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
-            android:progressTint="@color/star_color"/>
+            android:progressTint="@color/star_color"
+            android:progressBackgroundTint="@color/fab_color"
+            android:scaleX="1.3"
+            android:scaleY="1.3" />
 
-        <TextView
-            android:id="@+id/my_rating_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="아직 평점 없음"
-            android:fontFamily="@font/main_font"
-            android:textColor="@android:color/darker_gray"
-            android:paddingTop="4dp"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/my_rating_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="내 평점"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="16sp"
+                android:fontFamily="@font/main_font"
+                android:gravity="center"
+                android:paddingRight="10dp"/>
+
+            <TextView
+                android:id="@+id/my_rating_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="아직 평점 없음"
+                android:textStyle="bold"
+                android:fontFamily="@font/main_font"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
 
         <RatingBar
             android:id="@+id/my_rating"
@@ -93,7 +133,10 @@
             android:rating="0"
             android:layout_gravity="center"
             android:layout_marginTop="4dp"
-            android:progressTint="@color/star_color"/>
+            android:progressTint="@color/star_color"
+            android:scaleX="1.3"
+            android:scaleY="1.3"
+            android:progressBackgroundTint="@color/fab_color" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

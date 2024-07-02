@@ -97,7 +97,8 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
         android:layout_marginStart="30dp"
-        android:progressTint="@color/star_color"/>
+        android:progressTint="@color/star_color"
+        android:progressBackgroundTint="@color/star_background_color" />
 
     <TextView
         android:id="@+id/review_content_description"
@@ -134,7 +135,7 @@
         android:id="@+id/et_review_content"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="후기를 작성하세요..."
+        android:hint="후기를 작성하세요"
         android:padding="8dp"
         android:gravity="start|top"
         android:inputType="textMultiLine"
@@ -148,6 +149,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

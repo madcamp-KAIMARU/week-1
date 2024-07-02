@@ -10,6 +10,22 @@
         android:layout_height="match_parent"
         android:padding="8dp">
 
+        <TextView
+            android:id="@+id/ranking_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="성심당 랭킹"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:fontFamily="@font/bagelfatone_regular"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:paddingBottom="8dp"
+            android:gravity="center"/>
+
         <EditText
             android:id="@+id/search_edit_text"
             android:layout_width="0dp"
@@ -21,7 +37,7 @@
             android:textSize="16sp"
             android:inputType="text"
             android:fontFamily="@font/main_font"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ranking_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sort_spinner"
             app:layout_constraintBottom_toBottomOf="@+id/sort_spinner"
@@ -38,7 +54,7 @@
             android:paddingLeft="7dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/main_font"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ranking_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/search_edit_text"
             app:layout_constraintBottom_toBottomOf="@+id/search_edit_text"
