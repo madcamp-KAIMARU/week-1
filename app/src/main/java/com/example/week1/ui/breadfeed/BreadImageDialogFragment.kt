@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -23,6 +24,8 @@ class BreadImageDialogFragment : DialogFragment() {
 
     private lateinit var breadPost: BreadPost
     private var listener: OnBreadPostUpdatedListener? = null
+
+    private lateinit var viewModel: BreadfeedViewModel
 
     interface OnBreadPostUpdatedListener {
         fun onBreadPostUpdated(updatedBreadPost: BreadPost)
@@ -44,6 +47,8 @@ class BreadImageDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         breadPost = arguments?.getParcelable("bread_post") ?: return
+
+        viewModel = ViewModelProvider(requireActivity()).get(BreadfeedViewModel::class.java)
 
         Glide.with(requireContext())
             .load(breadPost.imageUrl)
@@ -93,6 +98,9 @@ class BreadImageDialogFragment : DialogFragment() {
                 }
                 binding.textViewParticipants.text =
                     "${breadPost.currentParticipants} / ${breadPost.maxParticipants}"
+
+                // 업데이트된 BreadPost를 ViewModel에 전달
+                viewModel.updateBreadPost(breadPost)
             } else {
                 Toast.makeText(context, getString(R.string.event_full), Toast.LENGTH_SHORT).show()
             }

@@ -2,8 +2,10 @@ package com.example.week1.ui.breadfeed
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.util.UUID
 
 data class BreadPost(
+    val id: String = UUID.randomUUID().toString(),
     val imageUrl: String,
     val description: String,
     val date: String,
@@ -13,6 +15,7 @@ data class BreadPost(
     var hasJoined: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString() ?: UUID.randomUUID().toString(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -23,6 +26,7 @@ data class BreadPost(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(id)
         parcel.writeString(imageUrl)
         parcel.writeString(description)
         parcel.writeString(date)
