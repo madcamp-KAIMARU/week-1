@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -40,6 +42,10 @@ class ReviewFragment : Fragment() {
         tvBreadName.text = "🍞 $breadName"
         ratingBar.rating = myRating
 
+        // 저장된 후기를 불러와서 EditText에 설정
+        val savedReview = sharedPreferences.getString("review_$breadName", "")
+        etReviewContent.setText(savedReview)
+
         btnBack.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -53,7 +59,15 @@ class ReviewFragment : Fragment() {
                 putString("breadName", breadName)
                 putFloat("myRating", newRating)
             })
+            hideKeyboard()  // 키보드를 숨깁니다.
             parentFragmentManager.popBackStack()
+        }
+
+        view.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                hideKeyboard()
+            }
+            false
         }
 
         return view
@@ -64,5 +78,10 @@ class ReviewFragment : Fragment() {
         editor.putString("review_$breadName", content)
         editor.putFloat("rating_$breadName", rating)
         editor.apply()
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }
