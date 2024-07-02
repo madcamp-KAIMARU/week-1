@@ -31,6 +31,8 @@ import com.example.week1.databinding.DialogAddBreadPostBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.Calendar
 import com.example.week1.R
+import java.util.UUID
+
 
 class BreadfeedFragment : Fragment() {
 
@@ -105,26 +107,38 @@ class BreadfeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d("BreadfeedFragment", "onViewCreated")
 
+        // ViewModel 초기화
+        viewModel = ViewModelProvider(this).get(BreadfeedViewModel::class.java)
+
+        // 더미 데이터 초기화
+        val preferences = BreadfeedPreferences(requireContext())
+        val dummyPosts = BreadfeedDummyData.getBreadPosts()
+        preferences.initializeWithDummyData(dummyPosts)
+
+        // RecyclerView 설정
         adapter = BreadfeedAdapter(
             requireContext(),
             mutableListOf(),
             childFragmentManager
-        ) // 수정: emptyList<BreadPost>()로 변경
+        )
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 3)  // 3 columns
         binding.recyclerView.adapter = adapter
         Log.d("BreadfeedFragment", "RecyclerView and Adapter set")
 
+        // ViewModel의 breadPosts를 관찰하여 UI 업데이트
         viewModel.breadPosts.observe(viewLifecycleOwner, Observer { newPosts ->
             adapter.updateData(newPosts)
             binding.recyclerView.scrollToPosition(0)
             Log.d("BreadfeedFragment", "Bread posts updated: ${newPosts.size} items")
         })
 
+        // 업로드 버튼 클릭 리스너 설정
         val uploadButton: FloatingActionButton = binding.uploadButton
         uploadButton.setOnClickListener {
             showUploadOptionsDialog()
         }
     }
+
 
     private fun showUploadOptionsDialog() {
         Log.d("BreadfeedFragment", "Showing upload options dialog")
@@ -284,7 +298,6 @@ class BreadfeedFragment : Fragment() {
         dialogBinding.editTextMaxParticipants.addTextChangedListener(textWatcher)
         dialogBinding.editTextWhere2Meet.addTextChangedListener(textWatcher)
 
-        // 날짜 및 시간 선택을 위해 클릭 이벤트 설정
         dialogBinding.editTextDate.setOnClickListener {
             showDateTimePicker(dialogBinding.editTextDate)
         }
@@ -295,13 +308,14 @@ class BreadfeedFragment : Fragment() {
             val maxParticipants = dialogBinding.editTextMaxParticipants.text.toString().toInt()
             val where2Meet = dialogBinding.editTextWhere2Meet.text.toString()
             val newBreadPost = BreadPost(
-                imageUri.toString(),
-                description,
-                date,
-                1,
-                maxParticipants,
-                where2Meet,
-                true,
+                id = UUID.randomUUID().toString(),
+                imageUrl = imageUri.toString(),
+                description = description,
+                date = date,
+                currentParticipants = 1,
+                maxParticipants = maxParticipants,
+                where2Meet = where2Meet,
+                hasJoined = true
             )
             viewModel.addBreadPost(newBreadPost)
             Log.d("BreadfeedFragment", "New bread post added: $newBreadPost")
@@ -310,6 +324,7 @@ class BreadfeedFragment : Fragment() {
 
         dialog.show()
     }
+
 
     private fun showDateTimePicker(editText: EditText) {
         Log.d("BreadfeedFragment", "Showing date time picker")
