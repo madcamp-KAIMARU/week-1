@@ -34,7 +34,7 @@ class RatingAdapter(
 
     override fun onBindViewHolder(holder: RatingViewHolder, position: Int) {
         val item = items[position]
-        holder.positionNumber.text = (position + 1).toString()
+        holder.positionNumber.text = (position + 1).toString() // Position starts from 1
         Glide.with(context).load(item.breadImage).into(holder.breadImage)
         holder.breadName.text = item.breadName
         holder.peopleRatingText.text = item.peopleRating.toString()

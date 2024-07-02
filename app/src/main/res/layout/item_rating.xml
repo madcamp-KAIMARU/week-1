@@ -70,7 +70,8 @@
             android:rating="4.5"
             android:isIndicator="true"
             android:layout_gravity="center"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="4dp"
+            android:progressTint="@color/star_color"/>
 
         <TextView
             android:id="@+id/my_rating_text"
@@ -91,7 +92,8 @@
             android:stepSize="0.5"
             android:rating="0"
             android:layout_gravity="center"
-            android:layout_marginTop="4dp"/>
+            android:layout_marginTop="4dp"
+            android:progressTint="@color/star_color"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

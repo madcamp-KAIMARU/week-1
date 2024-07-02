@@ -12,6 +12,7 @@
     <color name="backgroundColor">#F8F4E1</color>
     <color name="bottom_nav_selected_color">#74512D</color>
     <color name="bottom_nav_unselected_color">#97A2B0</color>
-    <color name="button_default_color">#B6C7AA</color>
-    <color name="button_pressed_color">#A4B697</color>
+    <color name="button_pressed_color">#FFCF96</color>
+    <color name="btn_color">#FF7D29</color>
+    <color name="star_color">#FFC700</color>
 </resources>
