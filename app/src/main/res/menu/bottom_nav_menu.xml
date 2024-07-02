@@ -5,7 +5,7 @@
         android:id="@+id/navigation_contact"
         android:icon="@drawable/user_group"
         android:fontFamily="@font/bagelfatone_regular"
-        android:title="빵친리스트" />
+        android:title="빵친 리스트" />
 
     <item
         android:id="@+id/navigation_breadfeed"
@@ -15,8 +15,8 @@
 
     <item
         android:id="@+id/navigation_ratings"
-        android:icon="@drawable/db"
+        android:icon="@drawable/ranking_icon"
         android:fontFamily="@font/bagelfatone_regular"
-        android:title="성심당DB" />
+        android:title="성심당 랭킹" />
 
 </menu>
