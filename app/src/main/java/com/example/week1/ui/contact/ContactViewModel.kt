@@ -4,16 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-data class Contact(val name: String, val number: String)
+data class Contact(
+    val name: String,
+    val number: String,
+    val isHeader: Boolean = false,
+    val initial: Char = if (name.isNotEmpty()) name.first().toUpperCase() else ' '
+)
 
 class ContactViewModel : ViewModel() {
-
-    // init
-//    private val _text = MutableLiveData<String>().apply {
-//        value = "This is contact Fragment"
-//    }
-//    val text: LiveData<String> = _text
-
     private val _contacts = MutableLiveData<List<Contact>>()
     val contacts: LiveData<List<Contact>> get() = _contacts
 

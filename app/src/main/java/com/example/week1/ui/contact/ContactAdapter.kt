@@ -1,88 +1,89 @@
 package com.example.week1.ui.contact
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
 
-class ContactAdapter(private val context: Context, private val contacts: List<Contact>, private val deleteListener: (Contact) -> Unit) : BaseAdapter() {
+class ContactAdapter(
+    private val context: Context,
+    private val contacts: List<Contact>,
+    private val deleteListener: (Contact) -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun getCount(): Int {
+    companion object {
+        private const val TYPE_HEADER = 0
+        private const val TYPE_ITEM = 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (contacts[position].isHeader) TYPE_HEADER else TYPE_ITEM
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == TYPE_HEADER) {
+            val view = LayoutInflater.from(context).inflate(R.layout.list_item_header, parent, false)
+            HeaderViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(context).inflate(R.layout.list_item_contact, parent, false)
+            ItemViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (getItemViewType(position) == TYPE_HEADER) {
+            (holder as HeaderViewHolder).bind(contacts[position])
+        } else {
+            (holder as ItemViewHolder).bind(contacts[position])
+        }
+    }
+
+    override fun getItemCount(): Int {
         return contacts.size
     }
 
-    override fun getItem(position: Int): Any {
-        return contacts[position]
-    }
+    inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val headerTextView: TextView = itemView.findViewById(R.id.headerTextView)
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View
-        val holder: ViewHolder
-
-        if (convertView == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.list_item_contact, parent, false)
-            holder = ViewHolder()
-            holder.nameTextView = view.findViewById(R.id.contactName)
-            holder.numberTextView = view.findViewById(R.id.contactNumber)
-            holder.imageView = view.findViewById(R.id.contactImage)
-            holder.moreButton = view.findViewById(R.id.moreButton)
-            view.tag = holder
-        } else {
-            view = convertView
-            holder = convertView.tag as ViewHolder
+        fun bind(contact: Contact) {
+            headerTextView.text = contact.initial.toString()
         }
+    }
 
-        val contact = contacts[position]
-        holder.nameTextView?.text = contact.name
-        holder.numberTextView?.text = contact.number
-        holder.imageView?.setImageResource(R.drawable.croissant)
+    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val nameTextView: TextView = itemView.findViewById(R.id.contactName)
+        private val numberTextView: TextView = itemView.findViewById(R.id.contactNumber)
+        private val imageView: ImageView = itemView.findViewById(R.id.contactImage)
+        private val moreButton: ImageButton = itemView.findViewById(R.id.moreButton)
 
-        view.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:${contact.number}")
+        fun bind(contact: Contact) {
+            nameTextView.text = contact.name
+            numberTextView.text = contact.number
+            imageView.setImageResource(R.drawable.croissant)
+
+            moreButton.setOnClickListener {
+                showPopupMenu(it, contact)
             }
-            context.startActivity(intent)
         }
 
-        holder.moreButton?.setOnClickListener {
-            showPopupMenu(it, contact)
-        }
-
-        return view
-    }
-
-    private fun showPopupMenu(view: View, contact: Contact) {
-        val popup = PopupMenu(context, view)
-        popup.inflate(R.menu.contact_options_menu)
-        popup.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.delete -> {
-                    deleteListener(contact)
-                    true
+        private fun showPopupMenu(view: View, contact: Contact) {
+            val popup = androidx.appcompat.widget.PopupMenu(context, view)
+            popup.inflate(R.menu.contact_options_menu)
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.delete -> {
+                        deleteListener(contact)
+                        true
+                    }
+                    else -> false
                 }
-                else -> false
             }
+            popup.show()
         }
-        popup.show()
-    }
-
-    private class ViewHolder {
-        var nameTextView: TextView? = null
-        var numberTextView: TextView? = null
-        var imageView: ImageView? = null
-        var moreButton: ImageButton? = null
     }
 }

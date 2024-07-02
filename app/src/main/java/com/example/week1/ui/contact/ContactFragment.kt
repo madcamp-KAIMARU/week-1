@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
 import com.example.week1.databinding.FragmentContactBinding
 import com.google.gson.Gson
@@ -33,6 +35,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     private lateinit var contactViewModel: ContactViewModel
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var allContacts: MutableList<Contact>
+    private lateinit var contactAdapter: ContactAdapter
 
     private var isFabMenuOpen = false
 
@@ -46,24 +49,33 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         contactViewModel = ViewModelProvider(this).get(ContactViewModel::class.java)
         sharedPreferences = requireContext().getSharedPreferences("contacts", Context.MODE_PRIVATE)
 
-        val listView = binding.contactListView
+        val recyclerView = binding.contactRecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer { contacts ->
             contacts?.let {
-                val adapter = ContactAdapter(requireContext(), it) { contact ->
+                val sortedContacts = addHeaders(it)
+                contactAdapter = ContactAdapter(requireContext(), sortedContacts) { contact ->
                     deleteContact(contact)
                 }
-                listView.adapter = adapter
+                recyclerView.adapter = contactAdapter
             }
         })
 
-        // 권한 확인 및 요청
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_CONTACTS), 1)
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                1
+            )
         } else {
             loadContacts()
         }
 
-        // FAB 메뉴 설정
         val fabMain: FloatingActionButton = binding.fabMain
         val fabSync: FloatingActionButton = binding.fabSync
         val fabAdd: FloatingActionButton = binding.fabAdd
@@ -89,7 +101,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             closeFabMenu(fabSync, fabAdd, fabMain)
         }
 
-        // 검색 바의 텍스트 변경 리스너 설정
         val searchBar = binding.searchBar
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -104,14 +115,22 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         return root
     }
 
-    private fun openFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
+    private fun openFabMenu(
+        fabSync: FloatingActionButton,
+        fabAdd: FloatingActionButton,
+        fabMain: FloatingActionButton
+    ) {
         isFabMenuOpen = true
         fabSync.visibility = View.VISIBLE
         fabAdd.visibility = View.VISIBLE
         fabMain.setImageResource(R.drawable.ic_close) // 아이콘을 빼기 기호로 변경
     }
 
-    private fun closeFabMenu(fabSync: FloatingActionButton, fabAdd: FloatingActionButton, fabMain: FloatingActionButton) {
+    private fun closeFabMenu(
+        fabSync: FloatingActionButton,
+        fabAdd: FloatingActionButton,
+        fabMain: FloatingActionButton
+    ) {
         isFabMenuOpen = false
         fabSync.visibility = View.GONE
         fabAdd.visibility = View.GONE
@@ -128,7 +147,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             Log.d("test", "permission granted")
             loadContacts()
         } else {
-            Log.d("test", "permission denied")
+            Log.d("test", " permission denied")
         }
     }
 
@@ -170,7 +189,8 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             while (cursor.moveToNext()) {
                 val name = cursor.getString(nameIndex)
                 val number = cursor.getString(numberIndex)
-                val contact = Contact(name, number)
+                val initial = if (name.isNotEmpty()) name.first().toUpperCase() else ' '
+                val contact = Contact(name, number, false, initial)
                 if (!currentContacts.any { it.name == contact.name && it.number == contact.number }) {
                     currentContacts.add(contact)
                 }
@@ -196,7 +216,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         // 연락처가 추가된 후 SharedPreferences에 저장하고 리스트를 갱신합니다.
         val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
         currentContacts.add(contact)
-
         // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
 
@@ -224,6 +243,23 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         val savedContactsJson = Gson().toJson(contacts)
         editor.putString("saved_contacts", savedContactsJson)
         editor.apply()
+    }
+
+    private fun addHeaders(contacts: List<Contact>): List<Contact> {
+        val sortedContacts = contacts.sortedBy { it.name }
+        val result = mutableListOf<Contact>()
+        var lastInitial = ' '
+
+        for (contact in sortedContacts) {
+            val initial = contact.name.first().toUpperCase()
+            if (initial != lastInitial) {
+                result.add(Contact(initial.toString(), "", true))
+                lastInitial = initial
+            }
+            result.add(contact)
+        }
+
+        return result
     }
 
     override fun onDestroyView() {

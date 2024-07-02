@@ -38,9 +38,10 @@ class AddContactDialogFragment : DialogFragment() {
         buttonSave.setOnClickListener {
             val name = nameEditText.text.toString()
             val number = numberEditText.text.toString()
+            val initial = name.firstOrNull()?.uppercaseChar() ?: ' '
 
             if (name.isNotEmpty() && number.isNotEmpty()) {
-                listener?.onContactAdded(Contact(name, number))
+                listener?.onContactAdded(Contact(name, number, false, initial))
                 Toast.makeText(requireContext(), "연락처가 저장되었습니다", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             } else {
