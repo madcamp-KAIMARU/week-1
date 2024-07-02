@@ -8,6 +8,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.week1.databinding.ActivityMainBinding
+import com.example.week1.ui.breadfeed.BreadfeedDummyData
+import com.example.week1.ui.breadfeed.BreadfeedPreferences
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +24,11 @@ class MainActivity : AppCompatActivity() {
 
         // Hide the ActionBar
         supportActionBar?.hide()
+
+        // 더미 데이터 초기화
+        val preferences = BreadfeedPreferences(this)
+        val dummyPosts = BreadfeedDummyData.getBreadPosts()
+        preferences.initializeWithDummyData(dummyPosts)
 
         val navView: BottomNavigationView = binding.navView
 
