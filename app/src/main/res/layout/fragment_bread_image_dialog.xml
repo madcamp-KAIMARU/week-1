@@ -109,7 +109,7 @@
             android:gravity="center"
             android:layout_marginBottom="16dp">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonJoin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                 android:padding="12dp"
                 android:fontFamily="@font/main_font"/>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/buttonClose"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

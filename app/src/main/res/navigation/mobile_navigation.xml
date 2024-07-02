@@ -22,4 +22,10 @@
         android:name="com.example.week1.ui.ratings.RatingsFragment"
         android:label="Ratings"
         tools:layout="@layout/fragment_ratings" />
+
+    <fragment
+        android:id="@+id/navigation_review"
+        android:name="com.example.week1.ui.ratings.ReviewFragment"
+        android:label="Review"
+        tools:layout="@layout/fragment_review" />
 </navigation>

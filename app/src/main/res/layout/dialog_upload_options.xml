@@ -28,7 +28,7 @@
         android:fontFamily="@font/main_font"
         android:gravity="center" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonTakePhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         android:padding="12dp"
         android:fontFamily="@font/main_font" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonChooseFromGallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

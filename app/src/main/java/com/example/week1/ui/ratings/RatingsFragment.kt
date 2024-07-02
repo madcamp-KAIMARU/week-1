@@ -11,11 +11,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.RatingBar
 import android.widget.Spinner
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
@@ -44,10 +43,10 @@ class RatingsFragment : Fragment() {
         filteredRatings = originalRatings.toMutableList()
 
         ratingAdapter = RatingAdapter(requireContext(), filteredRatings) { ratingItem ->
-            showRatingDialog(ratingItem)
+            navigateToReviewFragment(ratingItem)
         }
 
-        recyclerView.layoutManager = GridLayoutManager(context, 2) // 두 개의 열을 사용하여 Grid로 배치
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.adapter = ratingAdapter
 
         searchEditText.addTextChangedListener(object : TextWatcher {
@@ -58,7 +57,6 @@ class RatingsFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Initialize the Spinner for sorting
         val sortOptions = resources.getStringArray(R.array.sort_options)
         val spinnerAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item, sortOptions)
         spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
@@ -76,6 +74,12 @@ class RatingsFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+        setFragmentResultListener("review_updated") { _, bundle ->
+            val breadName = bundle.getString("breadName")
+            val myRating = bundle.getFloat("myRating")
+            updateRating(breadName, myRating)
+        }
+
         return view
     }
 
@@ -85,28 +89,33 @@ class RatingsFragment : Fragment() {
         } else {
             originalRatings.filter { it.breadName.contains(query, ignoreCase = true) }.toMutableList()
         }
-        sortRatings() // 현재 정렬 기준으로 필터링된 리스트를 정렬
+        sortRatings()
         ratingAdapter.updateList(filteredRatings)
     }
 
-    private fun showRatingDialog(ratingItem: RatingItem) {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_rating, null)
-        val ratingBar: RatingBar = dialogView.findViewById(R.id.dialog_rating_bar)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("내 평점 매기기")
-            .setView(dialogView)
-            .setPositiveButton("확인") { _, _ ->
-                val newRating = ratingBar.rating
-                ratingItem.myRating = newRating
-                ratingAdapter.updateRating(ratingItem, newRating)
-                saveRatings()
-                Toast.makeText(requireContext(), "${ratingItem.breadName}의 평점이 ${newRating}점으로 변경되었습니다.", Toast.LENGTH_SHORT).show()
+    private fun navigateToReviewFragment(ratingItem: RatingItem) {
+        val reviewFragment = ReviewFragment().apply {
+            arguments = Bundle().apply {
+                putString("breadName", ratingItem.breadName)
+                putFloat("myRating", ratingItem.myRating)
             }
-            .setNegativeButton("취소", null)
-            .create()
+        }
 
-        dialog.show()
+        parentFragmentManager.commit {
+            setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right)
+            replace(R.id.nav_host_fragment_activity_main, reviewFragment)
+            addToBackStack(null)
+        }
+    }
+
+    private fun updateRating(breadName: String?, newRating: Float) {
+        if (breadName != null) {
+            originalRatings.find { it.breadName == breadName }?.let {
+                it.myRating = newRating
+                saveRatings()  // Save the updated ratings
+                ratingAdapter.updateList(filteredRatings) // update filtered list
+            }
+        }
     }
 
     private fun sortByRatingHighToLow() {
@@ -130,6 +139,7 @@ class RatingsFragment : Fragment() {
             1 -> sortByRatingLowToHigh()
             2 -> sortByName()
         }
+        ratingAdapter.updateList(filteredRatings) // 목록을 업데이트하여 위치를 갱신
     }
 
     private fun saveRatings() {

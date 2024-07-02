@@ -8,7 +8,7 @@
     </item>
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/button_default_color"/> <!-- 기본 상태의 배경 색상 -->
+            <solid android:color="@color/btn_color"/> <!-- 기본 상태의 배경 색상 -->
             <corners android:radius="8dp"/>
         </shape>
     </item>
