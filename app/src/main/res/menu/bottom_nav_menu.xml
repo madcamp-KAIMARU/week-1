@@ -3,17 +3,20 @@
 
     <item
         android:id="@+id/navigation_contact"
-        android:icon="@drawable/ic_contact_black_24dp"
-        android:title="Contact" />
+        android:icon="@drawable/user_group"
+        android:fontFamily="@font/bagelfatone_regular"
+        android:title="빵친리스트" />
 
     <item
         android:id="@+id/navigation_breadfeed"
         android:icon="@drawable/icon_bread"
-        android:title="Breadfeed" />
+        android:fontFamily="@font/bagelfatone_regular"
+        android:title="빵먹으러 갈사람~" />
 
     <item
         android:id="@+id/navigation_ratings"
-        android:icon="@drawable/ic_notifications_black_24dp"
-        android:title="Ratings" />
+        android:icon="@drawable/db"
+        android:fontFamily="@font/bagelfatone_regular"
+        android:title="성심당DB" />
 
 </menu>
