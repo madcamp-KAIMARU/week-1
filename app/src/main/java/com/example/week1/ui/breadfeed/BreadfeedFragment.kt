@@ -100,6 +100,8 @@ class BreadfeedFragment : Fragment() {
         _binding = FragmentBreadfeedBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this).get(BreadfeedViewModel::class.java)
         Log.d("BreadfeedFragment", "onCreateView: ViewModel and Binding initialized")
+
+
         return binding.root
     }
 
@@ -110,10 +112,6 @@ class BreadfeedFragment : Fragment() {
         // ViewModel 초기화
         viewModel = ViewModelProvider(this).get(BreadfeedViewModel::class.java)
 
-        // 더미 데이터 초기화
-        val preferences = BreadfeedPreferences(requireContext())
-        val dummyPosts = BreadfeedDummyData.getBreadPosts()
-        preferences.initializeWithDummyData(dummyPosts)
 
         // RecyclerView 설정
         adapter = BreadfeedAdapter(
