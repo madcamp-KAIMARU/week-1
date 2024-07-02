@@ -47,11 +47,8 @@ class RatingAdapter(
             holder.myRating.rating = item.myRating
         }
 
-        holder.myRating.setOnClickListener {
-            onMyRatingClick(item)
-        }
-
-        holder.myRatingText.setOnClickListener {
+        // 카드뷰 전체에 클릭 리스너 설정
+        holder.itemView.setOnClickListener {
             onMyRatingClick(item)
         }
     }
