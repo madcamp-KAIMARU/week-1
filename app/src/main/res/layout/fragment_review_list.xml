@@ -76,7 +76,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="+ 후기 작성"
-        android:fontFamily="@font/bagelfatone_regular"
         android:contentDescription="Add Review"
         app:backgroundTint="@color/btn_color"
         android:textColor="@android:color/white"
