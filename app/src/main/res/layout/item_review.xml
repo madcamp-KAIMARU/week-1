@@ -2,28 +2,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="16dp">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
     <RatingBar
         android:id="@+id/review_rating"
+        style="@android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scaleX=".6"
+        android:scaleY=".6"
+        android:transformPivotX="0dp"
+        android:transformPivotY="0dp"
+        android:isIndicator="true"
+        android:max="5"
         android:numStars="5"
         android:stepSize="0.5"
-        android:layout_marginTop="15dp"
-        android:isIndicator="true"
         android:progressTint="@color/star_color"
         android:progressBackgroundTint="@color/star_background_color"
-        android:scaleX="0.6"
-        android:scaleY="0.6"
-        android:layout_gravity="start"/>
+        android:layout_marginTop="0dp" />
 
     <TextView
         android:id="@+id/review_content"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="50dp"/>
+        android:layout_marginTop="0dp"
+        android:paddingStart="0dp" />
 
 </LinearLayout>
