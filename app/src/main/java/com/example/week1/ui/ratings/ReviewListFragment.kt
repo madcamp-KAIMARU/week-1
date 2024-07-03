@@ -91,6 +91,12 @@ class ReviewListFragment : Fragment() {
         val reviews = loadReviews().toMutableList()
         reviews.removeAt(position)
         saveReviews(reviews)
+        updateReviewList()
+    }
+
+    private fun updateReviewList() {
+        Log.d("ReviewListFragment", "updateReviewList called")
+        val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }.toMutableList()
         reviewAdapter.updateReviews(reviews)
     }
 
