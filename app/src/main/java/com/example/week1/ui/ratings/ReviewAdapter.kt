@@ -2,29 +2,32 @@ package com.example.week1.ui.ratings
 
 import ReviewItem
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ReviewAdapter(
     private val context: Context,
-    private val reviews: MutableList<ReviewItem>,
-    private val onReviewDeleted: (ReviewItem) -> Unit
+    private var reviews: MutableList<ReviewItem>,
+    private val onDeleteClick: (Int) -> Unit
 ) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
 
     inner class ReviewViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val reviewRating: RatingBar = view.findViewById(R.id.review_rating)
         val reviewContent: TextView = view.findViewById(R.id.review_content)
-        val reviewDate: TextView = view.findViewById(R.id.review_date)
-        val btnDeleteReview: ImageButton = view.findViewById(R.id.btn_delete_review)
+        val ratingBar: RatingBar = view.findViewById(R.id.review_rating)
+        val reviewPhoto: ImageView = view.findViewById(R.id.review_photo)
+        val reviewDate: TextView = view.findViewById(R.id.review_date) // 새로운 필드 추가
+        val btnDeleteReview: ImageButton = view.findViewById(R.id.btn_delete_review) // 삭제 버튼 추가
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
@@ -36,25 +39,27 @@ class ReviewAdapter(
         val review = reviews[position]
         holder.reviewRating.rating = review.myRating
         holder.reviewContent.text = review.reviewContent
-        holder.reviewDate.text = formatDate(review.timestamp)
+        holder.ratingBar.rating = review.myRating
+        holder.reviewDate.text = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(review.timestamp))
+
+        if (!review.photoPath.isNullOrEmpty()) {
+            val imageUri = Uri.parse(review.photoPath)
+            holder.reviewPhoto.setImageURI(imageUri)
+            holder.reviewPhoto.visibility = View.VISIBLE
+        } else {
+            holder.reviewPhoto.visibility = View.GONE
+        }
 
         holder.btnDeleteReview.setOnClickListener {
-            onReviewDeleted(review)
+            onDeleteClick(position)
         }
     }
 
     override fun getItemCount(): Int = reviews.size
 
-    fun removeReview(review: ReviewItem) {
-        val position = reviews.indexOf(review)
-        if (position != -1) {
-            reviews.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
-    private fun formatDate(timestamp: Long): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return sdf.format(Date(timestamp))
+    fun updateReviews(newReviews: List<ReviewItem>) {
+        reviews.clear()
+        reviews.addAll(newReviews)
+        notifyDataSetChanged()
     }
 }

@@ -12,7 +12,6 @@
         android:layout_marginTop="15dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
-
         <RatingBar
             android:id="@+id/review_rating"
             android:layout_width="wrap_content"
@@ -60,5 +59,13 @@
         android:textSize="16sp"
         android:layout_marginTop="8dp"
         android:paddingLeft="4dp" />
+  
+    <ImageView
+        android:id="@+id/review_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop" />
 
 </LinearLayout>

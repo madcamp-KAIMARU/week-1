@@ -2,5 +2,6 @@ data class ReviewItem(
     val breadName: String,
     val reviewContent: String,
     val myRating: Float,
-    val timestamp: Long // 날짜를 저장할 속성 추가
+    val photoPath: String?,
+    val timestamp: Long // 새로운 필드 추가
 )

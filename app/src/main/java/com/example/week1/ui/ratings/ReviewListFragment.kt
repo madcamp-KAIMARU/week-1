@@ -29,13 +29,12 @@ class ReviewListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("ReviewListFragment", "onCreateView called")
         val view = inflater.inflate(R.layout.fragment_review_list, container, false)
         sharedPreferences = requireContext().getSharedPreferences("ratings_prefs", Context.MODE_PRIVATE)
 
-        // Retrieve breadName from arguments
         breadName = arguments?.getString("breadName") ?: ""
 
-        // Set breadName to TextView
         val tvBreadName: TextView = view.findViewById(R.id.tv_bread_name)
         tvBreadName.text = "🍞 $breadName"
 
@@ -43,26 +42,23 @@ class ReviewListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }.toMutableList()
+        Log.d("ReviewListFragment", "Loaded reviews: $reviews")
 
-        // Log loaded reviews for debugging
-        Log.d("ReviewList", "Loaded reviews: $reviews")
-
-        reviewAdapter = ReviewAdapter(requireContext(), reviews) { review ->
-            deleteReview(review)
+        reviewAdapter = ReviewAdapter(requireContext(), reviews) { position ->
+            deleteReview(position)
         }
         recyclerView.adapter = reviewAdapter
 
-        // Set up back button to navigate to RatingsFragment
         val btnBack: ImageButton = view.findViewById(R.id.btn_list_back)
-        Log.d("ReviewList", "Back button initialized: $btnBack")
+        Log.d("ReviewListFragment", "Back button initialized: $btnBack")
         btnBack.setOnClickListener {
-            Log.d("ReviewList", "Back button clicked")
+            Log.d("ReviewListFragment", "Back button clicked")
             navigateToRatingsFragment()
         }
 
-        // Set up floating action button to navigate to ReviewFragment
         val fabAddReview: ExtendedFloatingActionButton = view.findViewById(R.id.fab_add_review)
         fabAddReview.setOnClickListener {
+            Log.d("ReviewListFragment", "FAB Add Review clicked")
             navigateToReviewFragment()
         }
 
@@ -70,6 +66,7 @@ class ReviewListFragment : Fragment() {
     }
 
     private fun loadReviews(): List<ReviewItem> {
+        Log.d("ReviewListFragment", "loadReviews called")
         val gson = Gson()
         val json = sharedPreferences.getString("reviews_list", null)
         val type = object : TypeToken<List<ReviewItem>>() {}.type
@@ -80,21 +77,25 @@ class ReviewListFragment : Fragment() {
         }
     }
 
-    private fun deleteReview(review: ReviewItem) {
-        val reviews = loadReviews().toMutableList()
-        reviews.remove(review)
-
-        // Save updated reviews list
-        val editor = sharedPreferences.edit()
+    private fun saveReviews(reviews: List<ReviewItem>) {
+        Log.d("ReviewListFragment", "saveReviews called")
         val gson = Gson()
-        val updatedJson = gson.toJson(reviews)
-        editor.putString("reviews_list", updatedJson)
+        val editor = sharedPreferences.edit()
+        val json = gson.toJson(reviews)
+        editor.putString("reviews_list", json)
         editor.apply()
+    }
 
-        reviewAdapter.removeReview(review)
+    private fun deleteReview(position: Int) {
+        Log.d("ReviewListFragment", "deleteReview called")
+        val reviews = loadReviews().toMutableList()
+        reviews.removeAt(position)
+        saveReviews(reviews)
+        reviewAdapter.updateReviews(reviews)
     }
 
     private fun navigateToReviewFragment() {
+        Log.d("ReviewListFragment", "navigateToReviewFragment called")
         val reviewFragment = ReviewFragment().apply {
             arguments = Bundle().apply {
                 putString("breadName", breadName)
@@ -109,6 +110,7 @@ class ReviewListFragment : Fragment() {
     }
 
     private fun navigateToRatingsFragment() {
+        Log.d("ReviewListFragment", "navigateToRatingsFragment called")
         val ratingsFragment = RatingsFragment()
         parentFragmentManager.commit {
             setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right, R.anim.slide_in_right, R.anim.slide_out_left)
@@ -116,11 +118,11 @@ class ReviewListFragment : Fragment() {
             addToBackStack(null)
         }
 
-        // Log the back stack entries
         logBackStack()
     }
 
     private fun logBackStack() {
+        Log.d("ReviewListFragment", "logBackStack called")
         val fragmentManager = parentFragmentManager
         val backStackCount = fragmentManager.backStackEntryCount
         Log.d("BackStack", "BackStack count: $backStackCount")
