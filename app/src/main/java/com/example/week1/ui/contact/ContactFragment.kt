@@ -27,7 +27,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
-class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener {
+class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener, EditContactDialogFragment.OnContactEditedListener {
     private var _binding: FragmentContactBinding? = null
     private val binding get() = _binding!!
 
@@ -54,9 +54,11 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer { contacts ->
             contacts?.let {
                 val sortedContacts = addHeaders(it)
-                contactAdapter = ContactAdapter(requireContext(), sortedContacts) { contact ->
+                contactAdapter = ContactAdapter(requireContext(), sortedContacts, { contact ->
                     deleteContact(contact)
-                }
+                }, { contact ->
+                    editContact(contact)
+                })
                 recyclerView.adapter = contactAdapter
             }
         })
@@ -96,10 +98,9 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         fabAdd.setOnClickListener {
             val dialog = AddContactDialogFragment()
             dialog.setOnContactAddedListener(this)
-            dialog.show(parentFragmentManager, "AddContactDialogFragment")
+            dialog.show(parentFragmentManager, " AddContactDialogFragment ")
             closeFabMenu(fabSync, fabAdd, fabMain)
         }
-
         val searchBar = binding.searchBar
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -122,7 +123,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         isFabMenuOpen = true
         fabSync.visibility = View.VISIBLE
         fabAdd.visibility = View.VISIBLE
-        fabMain.setImageResource(R.drawable.ic_close) // 아이콘을 빼기 기호로 변경
+        fabMain.setImageResource(R.drawable.ic_close)
     }
 
     private fun closeFabMenu(
@@ -133,7 +134,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         isFabMenuOpen = false
         fabSync.visibility = View.GONE
         fabAdd.visibility = View.GONE
-        fabMain.setImageResource(R.drawable.ic_open) // 아이콘을 더하기 기호로 변경
+        fabMain.setImageResource(R.drawable.ic_open)
     }
 
     override fun onRequestPermissionsResult(
@@ -153,7 +154,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     private fun loadContacts() {
         val contactList = mutableListOf<Contact>()
 
-        // Load contacts from SharedPreferences
         val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
         if (!savedContactsJson.isNullOrEmpty()) {
             val type = object : TypeToken<List<Contact>>() {}.type
@@ -161,7 +161,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             contactList.addAll(savedContacts)
         }
 
-        // Sort contacts by name
         contactList.sortBy { it.name }
 
         allContacts = contactList
@@ -178,7 +177,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         val currentContacts = allContacts.toMutableList()
         val contactList = mutableListOf<Contact>()
 
-        // Load contacts from phone
         Log.d("ContactSync", "Loading contacts from phone")
         val resolver = requireContext().contentResolver
         val cursor: Cursor? = resolver.query(
@@ -206,7 +204,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         }
         Log.d("ContactSync", "Loaded ${contactList.size} contacts from phone")
 
-        // Load contacts from SharedPreferences
         Log.d("ContactSync", "Loading contacts from SharedPreferences")
         val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
         if (!savedContactsJson.isNullOrEmpty()) {
@@ -223,13 +220,11 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             "Loaded ${contactList.size} contacts after merging with saved contacts"
         )
 
-        // Sort contacts by name
         contactList.sortBy { it.name }
 
         allContacts = contactList
         contactViewModel.setContacts(contactList)
 
-        // Save synchronized contacts to SharedPreferences
         saveContactsToPreferences(contactList)
         Log.d("ContactSync", "Synchronization complete")
     }
@@ -246,6 +241,19 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         currentContacts.sortBy { it.name }
         allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
+    }
+
+    override fun onContactEdited(oldContact: Contact, newContact: Contact) {
+        val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
+        val index =
+            currentContacts.indexOfFirst { it.name == oldContact.name && it.number == oldContact.number }
+        if (index != -1) {
+            currentContacts[index] = newContact
+            saveContactsToPreferences(currentContacts)
+            currentContacts.sortBy { it.name }
+            allContacts = currentContacts
+            contactViewModel.setContacts(currentContacts)
+        }
     }
 
     private fun deleteContact(contact: Contact) {
@@ -281,10 +289,15 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         return result
     }
 
+    private fun editContact(contact: Contact) {
+        val dialog = EditContactDialogFragment()
+        dialog.setContact(contact)
+        dialog.setOnContactEditedListener(this)
+        dialog.show(parentFragmentManager, "EditContactDialogFragment")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
-
-

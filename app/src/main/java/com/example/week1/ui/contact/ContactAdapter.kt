@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
@@ -16,7 +17,8 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 class ContactAdapter(
     private val context: Context,
     private val contacts: List<Contact>,
-    private val deleteListener: (Contact) -> Unit
+    private val deleteListener: (Contact) -> Unit,
+    private val editListener: (Contact) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), FastScrollRecyclerView.SectionedAdapter {
 
     companion object {
@@ -86,6 +88,10 @@ class ContactAdapter(
             popup.inflate(R.menu.contact_options_menu)
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
+                    R.id.edit -> {
+                        editListener(contact)
+                        true
+                    }
                     R.id.delete -> {
                         deleteListener(contact)
                         true
