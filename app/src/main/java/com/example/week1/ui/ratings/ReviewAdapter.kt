@@ -59,7 +59,7 @@ class ReviewAdapter(
 
     fun updateReviews(newReviews: List<ReviewItem>) {
         reviews.clear()
-        reviews.addAll(newReviews)
+        reviews.addAll(newReviews.filter { it.reviewContent.isNotEmpty() })
         notifyDataSetChanged()
     }
 }
