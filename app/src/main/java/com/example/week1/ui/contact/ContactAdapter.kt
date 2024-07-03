@@ -1,6 +1,8 @@
 package com.example.week1.ui.contact
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +68,13 @@ class ContactAdapter(
             nameTextView.text = contact.name
             numberTextView.text = contact.number
             imageView.setImageResource(R.drawable.croissant)
+
+            itemView.setOnClickListener {
+                val dialIntent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${contact.number}")
+                }
+                context.startActivity(dialIntent)
+            }
 
             moreButton.setOnClickListener {
                 showPopupMenu(it, contact)

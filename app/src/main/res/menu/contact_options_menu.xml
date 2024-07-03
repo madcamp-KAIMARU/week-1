@@ -3,6 +3,7 @@
     <item
         android:id="@+id/delete"
         android:title="삭제"
+        android:fontFamily="@font/main_font"
         android:icon="@drawable/ic_delete"
         android:padding="8dp" />
 </menu>
