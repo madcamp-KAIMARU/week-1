@@ -133,10 +133,21 @@
             <ImageView
                 android:id="@+id/review_photo"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:visibility="gone" />
+
+<!--            <ImageView-->
+<!--                android:id="@+id/review_photo"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="200dp"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:visibility="gone" />-->
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/add_photo_button"
