@@ -1,5 +1,6 @@
 package com.example.week1.ui.ratings
 
+import ReviewItem
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -88,7 +89,8 @@ class ReviewFragment : Fragment() {
         }
 
         // Add new review
-        reviews.add(ReviewItem(breadName, content, rating))
+        val timestamp = System.currentTimeMillis()
+        reviews.add(ReviewItem(breadName, content, rating, timestamp))
 
         // Save updated reviews list
         val editor = sharedPreferences.edit()

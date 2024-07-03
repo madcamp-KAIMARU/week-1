@@ -1,5 +1,6 @@
 package com.example.week1.ui.ratings
 
+import ReviewItem
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -41,12 +42,14 @@ class ReviewListFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view_reviews)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }
+        val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }.toMutableList()
 
         // Log loaded reviews for debugging
         Log.d("ReviewList", "Loaded reviews: $reviews")
 
-        reviewAdapter = ReviewAdapter(requireContext(), reviews)
+        reviewAdapter = ReviewAdapter(requireContext(), reviews) { review ->
+            deleteReview(review)
+        }
         recyclerView.adapter = reviewAdapter
 
         // Set up back button to navigate to RatingsFragment
@@ -75,6 +78,20 @@ class ReviewListFragment : Fragment() {
         } else {
             emptyList()
         }
+    }
+
+    private fun deleteReview(review: ReviewItem) {
+        val reviews = loadReviews().toMutableList()
+        reviews.remove(review)
+
+        // Save updated reviews list
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val updatedJson = gson.toJson(reviews)
+        editor.putString("reviews_list", updatedJson)
+        editor.apply()
+
+        reviewAdapter.removeReview(review)
     }
 
     private fun navigateToReviewFragment() {
