@@ -1,5 +1,6 @@
 package com.example.week1.ui.ratings
 
+import ReviewItem
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle

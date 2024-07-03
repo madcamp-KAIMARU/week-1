@@ -1,5 +1,6 @@
 package com.example.week1.ui.ratings
 
+import ReviewItem
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ class ReviewAdapter(
 ) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
 
     inner class ReviewViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val reviewRating: RatingBar = view.findViewById(R.id.review_rating)
         val reviewContent: TextView = view.findViewById(R.id.review_content)
         val ratingBar: RatingBar = view.findViewById(R.id.review_rating)
         val reviewPhoto: ImageView = view.findViewById(R.id.review_photo)
@@ -35,6 +37,7 @@ class ReviewAdapter(
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
+        holder.reviewRating.rating = review.myRating
         holder.reviewContent.text = review.reviewContent
         holder.ratingBar.rating = review.myRating
         holder.reviewDate.text = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(review.timestamp))
