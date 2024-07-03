@@ -74,7 +74,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
                 1
             )
         } else {
-            loadContacts()
+            synchronizeContacts()
         }
 
         val fabMain: FloatingActionButton = binding.fabMain
