@@ -68,7 +68,6 @@ dependencies {
     implementation ("androidx.camera:camera-lifecycle:1.1.0-alpha05")
     implementation ("androidx.camera:camera-view:1.0.0-alpha23")
     implementation ("androidx.camera:camera-extensions:1.0.0-alpha23")
-
-
+    implementation ("com.simplecityapps:recyclerview-fastscroll:2.0.1")
     //implementation("io.github.yavski:fab-speed-dial:1.0.6")
 }

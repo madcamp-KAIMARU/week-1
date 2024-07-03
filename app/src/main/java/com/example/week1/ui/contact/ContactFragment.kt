@@ -20,15 +20,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
 import com.example.week1.databinding.FragmentContactBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
 class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener {
-
     private var _binding: FragmentContactBinding? = null
     private val binding get() = _binding!!
 
