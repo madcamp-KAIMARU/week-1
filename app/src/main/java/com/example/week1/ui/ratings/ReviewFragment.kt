@@ -1,6 +1,7 @@
 // LGTM
 package com.example.week1.ui.ratings
 
+import ReviewItem
 import android.Manifest
 import android.app.Activity
 import android.content.Context
