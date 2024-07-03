@@ -47,8 +47,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp">
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp">
 
         <TextView
             android:id="@+id/tv_bread_name"
@@ -69,7 +69,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="25dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_add_review"
@@ -77,11 +77,12 @@
         android:layout_height="wrap_content"
         android:text="+ 후기 작성"
         android:contentDescription="Add Review"
-        app:backgroundTint="@color/test_color"
+        app:backgroundTint="@color/btn_color"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"
-        android:paddingStart="23dp" />
+        android:paddingStart="23dp"
+        android:paddingEnd="23dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
