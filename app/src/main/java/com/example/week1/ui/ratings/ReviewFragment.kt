@@ -3,12 +3,10 @@ package com.example.week1.ui.ratings
 
 import ReviewItem
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,14 +22,11 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.week1.R
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,8 +41,6 @@ class ReviewFragment : Fragment() {
         private const val TAG = "ReviewFragment"
         private const val PREFS_NAME = "ratings_prefs"
         private const val REVIEWS_KEY = "reviews_list"
-        private const val REQUEST_IMAGE_CAPTURE = 1
-        private const val REQUEST_GALLERY_IMAGE = 2
     }
 
     private val pickImageLauncher =
@@ -65,7 +58,7 @@ class ReviewFragment : Fragment() {
         }
 
     private val takePhotoLauncher =
-        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             bitmap?.let {
                 Log.d(TAG, "Photo taken")
                 try {
@@ -175,7 +168,7 @@ class ReviewFragment : Fragment() {
         Log.d(TAG, "showUploadOptionsDialog: called")
         val dialogView =
             LayoutInflater.from(requireContext()).inflate(R.layout.dialog_upload_options, null)
-        val dialog = AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme) // 커스텀 스타일 적용
             .setView(dialogView)
             .create()
 
@@ -277,7 +270,7 @@ class ReviewFragment : Fragment() {
                 startActivity(intent)
             }
             .setNegativeButton("Cancel", null)
-        .show()
+            .show()
     }
 
     private fun pickImage() {
@@ -291,10 +284,7 @@ class ReviewFragment : Fragment() {
     }
 
     private fun saveReview(content: String, rating: Float) {
-        Log.d(
-            TAG,
-            "saveReview: called - content=$content, rating=$rating, photoPath=$currentPhotoPath"
-        )
+        Log.d(TAG, "saveReview: called - content=$content, rating=$rating, photoPath=$currentPhotoPath")
 
         val gson = Gson()
         val json = sharedPreferences.getString(REVIEWS_KEY, null)

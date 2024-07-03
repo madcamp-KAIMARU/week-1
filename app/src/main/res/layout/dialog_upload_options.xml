@@ -2,50 +2,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/dialog_background"
     android:layout_gravity="center"
-    android:gravity="center">
+    android:background="@drawable/dialog_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/dialogImage"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/breadfeed_dialog_bread"
         android:layout_marginBottom="8dp"
-        android:contentDescription="@string/upload_image" />
+        android:contentDescription="@string/upload_image"
+        android:src="@drawable/breadfeed_dialog_bread" />
 
     <TextView
         android:id="@+id/dialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="옵션 선택"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/primaryTextColor"
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/main_font"
-        android:gravity="center" />
+        android:gravity="center"
+        android:text="옵션 선택"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonTakePhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="사진 찍기"
-        android:textColor="@android:color/white"
-        android:background="@drawable/button_background"
         android:layout_marginBottom="8dp"
+        android:background="@drawable/button_background"
+        android:fontFamily="@font/main_font"
         android:padding="12dp"
-        android:fontFamily="@font/main_font" />
+        android:text="사진 찍기"
+        android:textColor="@android:color/white" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/buttonChooseFromGallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="갤러리에서 선택"
-        android:textColor="@android:color/white"
         android:background="@drawable/button_background"
+        android:fontFamily="@font/main_font"
         android:padding="12dp"
-        android:fontFamily="@font/main_font" />
+        android:text="갤러리에서 선택"
+        android:textColor="@android:color/white" />
 </LinearLayout>
