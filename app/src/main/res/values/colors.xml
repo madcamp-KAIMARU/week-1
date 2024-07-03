@@ -17,4 +17,5 @@
     <color name="star_color">#FFC700</color>
     <color name="star_background_color">#E7D4B5</color>
     <color name="test_color">#8C6A5D</color>
+    <color name="bread_border">#543310</color>
 </resources>
