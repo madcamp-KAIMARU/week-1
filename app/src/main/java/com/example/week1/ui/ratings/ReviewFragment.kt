@@ -303,7 +303,9 @@ class ReviewFragment : Fragment() {
             mutableListOf()
         }
 
-        reviews.add(ReviewItem(breadName, content, rating, currentPhotoPath))
+        val timestamp = System.currentTimeMillis() // 현재 시간으로 타임스탬프 설정
+
+        reviews.add(ReviewItem(breadName, content, rating, currentPhotoPath, timestamp))
 
         val editor = sharedPreferences.edit()
         val updatedJson = gson.toJson(reviews)

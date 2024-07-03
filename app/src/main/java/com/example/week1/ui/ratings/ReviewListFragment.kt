@@ -40,10 +40,12 @@ class ReviewListFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view_reviews)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }
+        val reviews = loadReviews().filter { it.breadName == breadName && it.reviewContent.isNotEmpty() }.toMutableList()
         Log.d("ReviewListFragment", "Loaded reviews: $reviews")
 
-        reviewAdapter = ReviewAdapter(requireContext(), reviews)
+        reviewAdapter = ReviewAdapter(requireContext(), reviews) { position ->
+            deleteReview(position)
+        }
         recyclerView.adapter = reviewAdapter
 
         val btnBack: ImageButton = view.findViewById(R.id.btn_list_back)
@@ -65,18 +67,30 @@ class ReviewListFragment : Fragment() {
     private fun loadReviews(): List<ReviewItem> {
         Log.d("ReviewListFragment", "loadReviews called")
         val gson = Gson()
-        Log.d("ReviewListFragment", "not die a")
         val json = sharedPreferences.getString("reviews_list", null)
-        Log.d("ReviewListFragment", "not die b")
         val type = object : TypeToken<List<ReviewItem>>() {}.type
-        Log.d("ReviewListFragment", "not die c")
         return if (json != null) {
-            Log.d("ReviewListFragment", "not die d")
             gson.fromJson(json, type)
         } else {
-            Log.d("ReviewListFragment", "not die e")
             emptyList()
         }
+    }
+
+    private fun saveReviews(reviews: List<ReviewItem>) {
+        Log.d("ReviewListFragment", "saveReviews called")
+        val gson = Gson()
+        val editor = sharedPreferences.edit()
+        val json = gson.toJson(reviews)
+        editor.putString("reviews_list", json)
+        editor.apply()
+    }
+
+    private fun deleteReview(position: Int) {
+        Log.d("ReviewListFragment", "deleteReview called")
+        val reviews = loadReviews().toMutableList()
+        reviews.removeAt(position)
+        saveReviews(reviews)
+        reviewAdapter.updateReviews(reviews)
     }
 
     private fun navigateToReviewFragment() {
