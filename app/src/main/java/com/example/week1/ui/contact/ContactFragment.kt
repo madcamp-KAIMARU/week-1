@@ -27,7 +27,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
-class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener {
+class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListener, EditContactDialogFragment.OnContactEditedListener {
     private var _binding: FragmentContactBinding? = null
     private val binding get() = _binding!!
 
@@ -54,9 +54,11 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         contactViewModel.contacts.observe(viewLifecycleOwner, Observer { contacts ->
             contacts?.let {
                 val sortedContacts = addHeaders(it)
-                contactAdapter = ContactAdapter(requireContext(), sortedContacts) { contact ->
+                contactAdapter = ContactAdapter(requireContext(), sortedContacts, { contact ->
                     deleteContact(contact)
-                }
+                }, { contact ->
+                    editContact(contact)
+                })
                 recyclerView.adapter = contactAdapter
             }
         })
@@ -96,10 +98,9 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         fabAdd.setOnClickListener {
             val dialog = AddContactDialogFragment()
             dialog.setOnContactAddedListener(this)
-            dialog.show(parentFragmentManager, "AddContactDialogFragment")
+            dialog.show(parentFragmentManager, " AddContactDialogFragment ")
             closeFabMenu(fabSync, fabAdd, fabMain)
         }
-
         val searchBar = binding.searchBar
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -122,7 +123,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         isFabMenuOpen = true
         fabSync.visibility = View.VISIBLE
         fabAdd.visibility = View.VISIBLE
-        fabMain.setImageResource(R.drawable.ic_close) // 아이콘을 빼기 기호로 변경
+        fabMain.setImageResource(R.drawable.ic_close)
     }
 
     private fun closeFabMenu(
@@ -133,7 +134,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         isFabMenuOpen = false
         fabSync.visibility = View.GONE
         fabAdd.visibility = View.GONE
-        fabMain.setImageResource(R.drawable.ic_open) // 아이콘을 더하기 기호로 변경
+        fabMain.setImageResource(R.drawable.ic_open)
     }
 
     override fun onRequestPermissionsResult(
@@ -143,17 +144,16 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.d("test", "permission granted")
+            Log.d("ContactSync", "Permission granted")
             loadContacts()
         } else {
-            Log.d("test", " permission denied")
+            Log.d("ContactSync", "Permission denied")
         }
     }
 
     private fun loadContacts() {
         val contactList = mutableListOf<Contact>()
 
-        // Load contacts from SharedPreferences
         val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
         if (!savedContactsJson.isNullOrEmpty()) {
             val type = object : TypeToken<List<Contact>>() {}.type
@@ -161,7 +161,6 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
             contactList.addAll(savedContacts)
         }
 
-        // Sort contacts by name
         contactList.sortBy { it.name }
 
         allContacts = contactList
@@ -169,9 +168,16 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     }
 
     private fun synchronizeContacts() {
-        val currentContacts = allContacts.toMutableList()
+        if (!::allContacts.isInitialized) {
+            Log.e("synchronizeContacts", "allContacts has not been initialized")
+            loadContacts()
+        }
 
-        // Load contacts from phone
+        Log.d("ContactSync", "Starting synchronization")
+        val currentContacts = allContacts.toMutableList()
+        val contactList = mutableListOf<Contact>()
+
+        Log.d("ContactSync", "Loading contacts from phone")
         val resolver = requireContext().contentResolver
         val cursor: Cursor? = resolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -182,28 +188,45 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         )
 
         cursor?.use {
-            val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            val nameIndex =
+                cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
             val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
 
             while (cursor.moveToNext()) {
                 val name = cursor.getString(nameIndex)
                 val number = cursor.getString(numberIndex)
-                val initial = if (name.isNotEmpty()) name.first().toUpperCase() else ' '
+                val initial = if (name.isNotEmpty()) name.first().uppercaseChar() else ' '
                 val contact = Contact(name, number, false, initial)
-                if (!currentContacts.any { it.name == contact.name && it.number == contact.number }) {
-                    currentContacts.add(contact)
+                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
+                    contactList.add(contact)
                 }
             }
         }
+        Log.d("ContactSync", "Loaded ${contactList.size} contacts from phone")
 
-        // Sort contacts by name
-        currentContacts.sortBy { it.name }
+        Log.d("ContactSync", "Loading contacts from SharedPreferences")
+        val savedContactsJson = sharedPreferences.getString("saved_contacts", "")
+        if (!savedContactsJson.isNullOrEmpty()) {
+            val type = object : TypeToken<List<Contact>>() {}.type
+            val savedContacts: List<Contact> = Gson().fromJson(savedContactsJson, type)
+            for (contact in savedContacts) {
+                if (!contactList.any { it.name == contact.name && it.number == contact.number }) {
+                    contactList.add(contact)
+                }
+            }
+        }
+        Log.d(
+            "ContactSync",
+            "Loaded ${contactList.size} contacts after merging with saved contacts"
+        )
 
-        allContacts = currentContacts
-        contactViewModel.setContacts(currentContacts)
+        contactList.sortBy { it.name }
 
-        // Save synchronized contacts to SharedPreferences
-        saveContactsToPreferences(currentContacts)
+        allContacts = contactList
+        contactViewModel.setContacts(contactList)
+
+        saveContactsToPreferences(contactList)
+        Log.d("ContactSync", "Synchronization complete")
     }
 
     private fun filterContacts(query: String) {
@@ -212,26 +235,31 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
     }
 
     override fun onContactAdded(contact: Contact) {
-        // 연락처가 추가된 후 SharedPreferences에 저장하고 리스트를 갱신합니다.
         val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
         currentContacts.add(contact)
-        // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
-
-        // Sort contacts by name
         currentContacts.sortBy { it.name }
-
         allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
+    }
+
+    override fun onContactEdited(oldContact: Contact, newContact: Contact) {
+        val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
+        val index =
+            currentContacts.indexOfFirst { it.name == oldContact.name && it.number == oldContact.number }
+        if (index != -1) {
+            currentContacts[index] = newContact
+            saveContactsToPreferences(currentContacts)
+            currentContacts.sortBy { it.name }
+            allContacts = currentContacts
+            contactViewModel.setContacts(currentContacts)
+        }
     }
 
     private fun deleteContact(contact: Contact) {
         val currentContacts = contactViewModel.contacts.value.orEmpty().toMutableList()
         currentContacts.remove(contact)
-
-        // Save to SharedPreferences
         saveContactsToPreferences(currentContacts)
-
         allContacts = currentContacts
         contactViewModel.setContacts(currentContacts)
         Toast.makeText(requireContext(), "Contact deleted", Toast.LENGTH_SHORT).show()
@@ -250,7 +278,7 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         var lastInitial = ' '
 
         for (contact in sortedContacts) {
-            val initial = contact.name.first().toUpperCase()
+            val initial = contact.name.first().uppercaseChar()
             if (initial != lastInitial) {
                 result.add(Contact(initial.toString(), "", true))
                 lastInitial = initial
@@ -259,6 +287,13 @@ class ContactFragment : Fragment(), AddContactDialogFragment.OnContactAddedListe
         }
 
         return result
+    }
+
+    private fun editContact(contact: Contact) {
+        val dialog = EditContactDialogFragment()
+        dialog.setContact(contact)
+        dialog.setOnContactEditedListener(this)
+        dialog.show(parentFragmentManager, "EditContactDialogFragment")
     }
 
     override fun onDestroyView() {
