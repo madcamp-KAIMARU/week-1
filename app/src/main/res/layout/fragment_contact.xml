@@ -54,11 +54,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintWidth_percent="0.9" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/contactRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="8dp"
+        android:background="@color/backgroundColor"
+        app:fastScrollPopupBgColor="@color/fab_color"
+        app:fastScrollTrackColor="@color/fab_color"
+        app:fastScrollPopupBackgroundSize="48dp"
+        app:fastScrollPopupTextSize="16sp"
         app:layout_constraintTop_toBottomOf="@id/searchBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -9,12 +9,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week1.R
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
 
 class ContactAdapter(
     private val context: Context,
     private val contacts: List<Contact>,
     private val deleteListener: (Contact) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), FastScrollRecyclerView.SectionedAdapter {
 
     companion object {
         private const val TYPE_HEADER = 0
@@ -85,5 +86,9 @@ class ContactAdapter(
             }
             popup.show()
         }
+    }
+
+    override fun getSectionName(position: Int): String {
+        return contacts[position].initial.toString()
     }
 }
