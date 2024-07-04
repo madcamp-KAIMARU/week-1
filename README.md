@@ -101,8 +101,7 @@
 - **작성한 후기 리스트 보기 :** 해당 빵에 대한 후기가 있다면, 지금까지 작성한 후기 리스트를 확인할 수 있습니다. 리스트에는 매긴 내 평점과 작성 날짜, 후기 내용과 사진이 포함됩니다. 삭제하고 싶은 후기를 휴지통 아이콘을 클릭해 삭제할 수 있습니다.
 
 ## APK File
-
-[빵빵이와 친구들](https://drive.google.com/file/d/1tSX5yySk2Dk3TP9XEJe7S6JL24BEpGT2/view?usp=share_link)
+[빵빵이와 친구들](https://drive.google.com/file/d/17CzgDbVelnbPWL-_izLCva2BQ5kb3JBh/view?usp=share_link)
 
 - 스크럼
     
